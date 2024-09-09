@@ -99,33 +99,33 @@ export const Template: React.FC<ProfileTemplateProps> = ({data}) => {
                             animate={controls}
                             custom={0}
                         >
-                            {data.photoUrl && (
+                            {data.u && (
                                 <motion.div
                                     className="h-32 w-32 rounded-full overflow-hidden ring-4 ring-purple-400 mx-auto"
                                     whileHover={{scale: 1.1}}
                                     whileTap={{scale: 0.9}}
                                 >
-                                    <img src={data.photoUrl} alt={data.name} className="h-full w-full object-cover"/>
+                                    <img src={data.u} alt={data.n} className="h-full w-full object-cover"/>
                                 </motion.div>
                             )}
-                            {data.name && (
+                            {data.n && (
                                 <motion.h1
                                     className="text-3xl font-bold mt-4 text-gray-800"
                                     initial={{opacity: 0}}
                                     animate={controls}
                                     custom={1}
                                 >
-                                    {data.name}
+                                    {data.n}
                                 </motion.h1>
                             )}
-                            {data.about && (
+                            {data.b && (
                                 <motion.p
                                     className="text-lg mt-2 text-gray-600"
                                     initial={{opacity: 0}}
                                     animate={controls}
                                     custom={2}
                                 >
-                                    {data.about}
+                                    {data.b}
                                 </motion.p>
                             )}
                         </motion.div>
@@ -172,7 +172,7 @@ export const Template: React.FC<ProfileTemplateProps> = ({data}) => {
                                 <AnimatePresence>
                                     {data.ls.map((link: Link, index) => (
                                         <motion.li
-                                            key={link.id || link.u}
+                                            key={link.u}
                                             initial={{opacity: 0, x: -50}}
                                             animate={{opacity: 1, x: 0}}
                                             exit={{opacity: 0, x: 50}}

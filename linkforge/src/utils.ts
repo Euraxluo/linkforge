@@ -8,7 +8,6 @@ export const decodeData = (base64) => JSON.parse(decode(base64));
 
 
 export interface Link {
-    id?: number
     u: string;
     l: string;
     i?: string;
@@ -16,41 +15,41 @@ export interface Link {
 
 export interface PreviewData {
     ls?: Link[],
-    name?: string,
-    about?: string,
-    photoUrl?: string,
-    Facebook?: string,
-    X?: string,
-    Instagram?: string,
-    Email?: string,
-    Github?: string,
-    Telegram?: string,
-    Whatsapp?: string,
-    Youtube?: string,
-    LinkedIn?: string,
-    Mastodon?: string,
+    n?: string,
+    b?: string,
+    u?: string,
+    f?: string,
+    x?: string,
+    ig?: string,
+    e?: string,
+    gh?: string,
+    tg?: string,
+    w?: string,
+    y?: string,
+    lk?: string,
+    m?: string,
 }
 
 
 export function generateSocialIcons(data: PreviewData): { key: string; icon: string; link: string | null }[] {
     return [
-        {key: 'Facebook', icon: "ph:facebook-logo-duotone", link: data.Facebook || null},
-        {key: 'X', icon: "ph:x-logo-duotone", link: data.X || null},
-        {key: 'Instagram', icon: "ph:instagram-logo-duotone", link: data.Instagram || null},
-        {key: 'Github', icon: "ph:github-logo-duotone", link: data.Github || null},
-        {key: 'Telegram', icon: "ph:telegram-logo-duotone", link: data.Telegram || null},
-        {key: 'LinkedIn', icon: "ph:linkedin-logo-duotone", link: data.LinkedIn || null},
-        {key: 'Email', icon: "ph:envelope-duotone", link: data.Email ? `mailto:${data.Email}` : null},
-        {key: 'Youtube', icon: "ph:youtube-logo-duotone", link: data.Youtube || null},
+        {key: 'Facebook', icon: "ph:facebook-logo-duotone", link: data.f || null},
+        {key: 'X', icon: "ph:x-logo-duotone", link: data.x || null},
+        {key: 'Instagram', icon: "ph:instagram-logo-duotone", link: data.ig || null},
+        {key: 'Github', icon: "ph:github-logo-duotone", link: data.gh || null},
+        {key: 'Telegram', icon: "ph:telegram-logo-duotone", link: data.tg || null},
+        {key: 'LinkedIn', icon: "ph:linkedin-logo-duotone", link: data.lk || null},
+        {key: 'Email', icon: "ph:envelope-duotone", link: data.e ? `mailto:${data.e}` : null},
+        {key: 'Youtube', icon: "ph:youtube-logo-duotone", link: data.y || null},
         {
             key: 'Whatsapp',
             icon: "ph:whatsapp-logo-duotone",
-            link: data.Whatsapp ? `https://wa.me/${data.Whatsapp}` : null
+            link: data.w ? `https://wa.me/${data.w}` : null
         },
         {
             key: 'Mastodon',
             icon: "ph:mastodon-logo-duotone",
-            link: data.Mastodon ? `https://mastodon.social/@${data.Mastodon}` : null
+            link: data.m ? `https://mastodon.social/@${data.m}` : null
         },
     ];
 }

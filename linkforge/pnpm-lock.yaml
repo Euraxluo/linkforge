@@ -44,6 +44,9 @@ importers:
       react-router-dom:
         specifier: ^6.26.1
         version: 6.26.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      tuskscript:
+        specifier: ^0.0.3
+        version: 0.0.3
     devDependencies:
       '@eslint/js':
         specifier: ^9.9.0
@@ -1853,6 +1856,9 @@ packages:
 
   tslib@2.7.0:
     resolution: {integrity: sha512-gLXCKdN1/j47AiHiOkJN69hJmcbGTHI0ImLmbYLHykhgeN0jVGola9yVjFgzCUklsZQMW55o+dW7IXv3RCXDzA==}
+
+  tuskscript@0.0.3:
+    resolution: {integrity: sha512-IKEe7RMvHL4OErWWc1mq9RiaZgcFry+IHAlnfgSx9qF0kt0dcdkZvwVKYbHbTdbFr8DAD7lsr44jJ9Wqv/iinw==}
 
   type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
@@ -3830,6 +3836,8 @@ snapshots:
   ts-interface-checker@0.1.13: {}
 
   tslib@2.7.0: {}
+
+  tuskscript@0.0.3: {}
 
   type-check@0.4.0:
     dependencies:

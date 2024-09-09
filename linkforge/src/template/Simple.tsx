@@ -15,13 +15,13 @@ export const Template: React.FC<ProfileTemplateProps> = ({data}) => {
     return (
         <main className="p-4 bg-white min-h-screen w-full space-y-8 pt-12 max-w-lg mx-auto">
             <div className="text-center">
-                {data.photoUrl && (
+                {data.u && (
                     <div className="h-20 w-20 rounded-full overflow-hidden ring ring-slate-200 mx-auto">
-                        <img src={data.photoUrl} alt={data.name} className="h-full w-full object-cover"/>
+                        <img src={data.u} alt={data.n} className="h-full w-full object-cover"/>
                     </div>
                 )}
-                {data.name && <h1 className="text-2xl font-bold mt-4 text-slate-800">{data.name}</h1>}
-                {data.about && <p className="text-sm mt-2 text-slate-600">{data.about}</p>}
+                {data.n && <h1 className="text-2xl font-bold mt-4 text-slate-800">{data.n}</h1>}
+                {data.b && <p className="text-sm mt-2 text-slate-600">{data.b}</p>}
             </div>
             {!allSocialLinksAreEmpty && (
                 <div className="flex items-center justify-center flex-wrap">
@@ -40,7 +40,7 @@ export const Template: React.FC<ProfileTemplateProps> = ({data}) => {
             {data.ls && data.ls.length > 0 && (
                 <ul className="space-y-2">
                     {data.ls.map((link: Link) => (
-                        <li key={link.id || link.u}>
+                        <li key={link.u}>
                             <a
                                 href={link.u}
                                 target="_blank"

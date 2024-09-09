@@ -1,13 +1,25 @@
-import {motion, AnimatePresence} from 'framer-motion'
+import {motion, AnimatePresence, Variants} from 'framer-motion'
 import * as Tabs from '@radix-ui/react-tabs'
 import {useEffect, useState, useCallback, useRef} from "react";
 import * as React from 'react';
 import {DragDropContext, Droppable, Draggable} from 'react-beautiful-dnd'
-import {Fish, Shell, Waves, ArrowRight, X, CirclePlus, GripVertical} from 'lucide-react'
+import {
+    Fish,
+    Shell,
+    Waves,
+    ArrowRight,
+    X,
+    CirclePlus,
+    GripVertical,
+    Loader2,
+    LoaderPinwheel,
+    CircleFadingArrowUp
+} from 'lucide-react'
 import {Icon} from '@iconify-icon/react';
 import Cropper from 'react-easy-crop'
 import {Point, Area} from 'react-easy-crop/types'
 import {encodeData, generateSocialIcons, Link, PreviewData} from "./utils";
+import {WalrusClient} from 'tuskscript'
 
 interface SeaCreature {
     id: number
@@ -384,20 +396,20 @@ export default function LinkForge() {
 
 function MintSection() {
     const [data, setData] = useState<PreviewData>({
-        name: "",
-        about: "",
-        photoUrl: "",
+        n: "",
+        b: "",
+        u: "",
         ls: [],
-        Facebook: "",
-        X: "",
-        Instagram: "",
-        Email: "",
-        Github: "",
-        Telegram: "",
-        Whatsapp: "",
-        Youtube: "",
-        LinkedIn: "",
-        Mastodon: "",
+        f: "",
+        x: "",
+        ig: "",
+        e: "",
+        gh: "",
+        tg: "",
+        w: "",
+        y: "",
+        lk: "",
+        m: "",
     });
 
     const updateData = (newData) => {
@@ -434,19 +446,19 @@ function MintSection() {
                         u: "https://google.com",
                     },
                 ],
-                name: "John Snow",
-                about: "I'm John Snow, the king in the north. I know Nothing.",
-                photoUrl: "https://i.insider.com/56743fad72f2c12a008b6cc0",
-                Facebook: "https://www.facebook.com/username",
-                X: "https://x.com/username",
-                Instagram: "https://www.instagram.com/username",
-                Email: "mail@username.cc",
-                Github: "https://github.com/username",
-                Telegram: "https://t.me/username",
-                Whatsapp: "+918888888888",
-                Youtube: "https://youtube.com/@username",
-                LinkedIn: "https://linkedin.com/in/username",
-                Mastodon: "https://mastodon.social/@username",
+                n: "John Snow",
+                b: "I'm John Snow, the king in the north. I know Nothing.",
+                u: "https://i.insider.com/56743fad72f2c12a008b6cc0",
+                f: "https://www.facebook.com/username",
+                x: "https://x.com/username",
+                ig: "https://www.instagram.com/username",
+                e: "mail@username.cc",
+                gh: "https://github.com/username",
+                tg: "https://t.me/username",
+                w: "+918888888888",
+                y: "https://youtube.com/@username",
+                lk: "https://linkedin.com/in/username",
+                m: "https://mastodon.social/@username",
             }
         );
     };
@@ -574,6 +586,118 @@ const EnhancedAddButton = ({onClick}: { onClick: () => void }) => {
         </motion.button>
     )
 }
+const EnhancedUploadButton = ({onClick, uploading}: { onClick: () => void; uploading: boolean }) => {
+    const [isHovered, setIsHovered] = useState(false)
+
+    const buttonVariants = {
+        initial: {scale: 1},
+        hover: {scale: 1.05},
+    }
+
+    const waveVariants = {
+        animate: {
+            x: [0, -100],
+            transition: {
+                x: {
+                    repeat: Infinity,
+                    repeatType: "loop",
+                    duration: 5,
+                    ease: "linear",
+                },
+            },
+        },
+    }
+
+    const glowVariants: Variants = {
+        animate: {
+            opacity: [0.5, 1, 0.5],
+            scale: [1, 1.2, 1],
+            transition: {
+                duration: 2,
+                repeat: Infinity,
+                repeatType: "reverse",
+            },
+        },
+    }
+
+    const bubbleVariants = {
+        initial: {y: 0, opacity: 0},
+        animate: {y: -100, opacity: [0, 1, 0]},
+    }
+
+    return (
+        <motion.button
+            onClick={onClick}
+            disabled={uploading}
+            className="relative flex  py-2 w-full rounded-lg overflow-hidden focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 disabled:opacity-75"
+            variants={buttonVariants}
+            initial="initial"
+            whileHover="hover"
+            onHoverStart={() => setIsHovered(true)}
+            onHoverEnd={() => setIsHovered(false)}
+        >
+            {/* Ocean gradient background */}
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-cyan-500 to-teal-400"/>
+
+            {/* Animated waves */}
+            <motion.div
+                className="absolute inset-0"
+                variants={waveVariants}
+                animate="animate"
+            >
+                <div
+                    className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJ3YXZlIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjIwIj48cGF0aCBkPSJNMCAyMGMyMCAwIDIwLTE1IDQwLTE1czIwIDE1IDQwIDE1IDIwLTE1IDQwLTE1IiBmaWxsPSJub25lIiBzdHJva2U9InJnYmEoMjU1LDI1NSwyNTUsMC4zKSIgc3Ryb2tlLXdpZHRoPSIyIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI3dhdmUpIi8+PC9zdmc+')]"/>
+            </motion.div>
+
+            {/* Glow effect */}
+            <motion.div
+                className="absolute inset-0 bg-white opacity-20 blur-md animate-glow"
+                variants={glowVariants}
+                animate="animate"
+            />
+
+            {/* Content */}
+            <div
+                className="relative z-10 flex items-center justify-center w-full h-full text-white font-semibold text-lg">
+                {uploading ? (
+                    <LoaderPinwheel className="w-6 h-6 animate-spin"/>
+                ) : (
+                    <CircleFadingArrowUp className="w-6 h-6"/>
+                )}
+                <span className="ml-2">{uploading ? 'Uploading...' : 'Upload'}</span>
+            </div>
+
+            {/* Bubble animation */}
+            <AnimatePresence>
+                {(isHovered || uploading) && (
+                    <>
+                        {[...Array(10)].map((_, index) => (
+                            <motion.div
+                                key={index}
+                                className="absolute bottom-0 bg-white rounded-full"
+                                style={{
+                                    left: `${Math.random() * 100}%`,
+                                    width: `${Math.random() * 10 + 5}px`,
+                                    height: `${Math.random() * 10 + 5}px`,
+                                }}
+                                variants={bubbleVariants}
+                                initial="initial"
+                                animate="animate"
+                                exit="initial"
+                                transition={{
+                                    duration: Math.random() * 2 + 1,
+                                    repeat: Infinity,
+                                    repeatType: "loop",
+                                    delay: Math.random() * 2,
+                                }}
+                            />
+                        ))}
+                    </>
+                )}
+            </AnimatePresence>
+        </motion.button>
+    )
+}
 
 function LinksForm({data, updateData}) {
     const handleChange = (index: number, field: keyof Link, value: string) => {
@@ -691,12 +815,13 @@ function LinksForm({data, updateData}) {
 }
 
 interface SocialMedia {
+    key: string
     name: string
     icon: string
     placeholder: string
 }
 
-function SocialLinksForm({data, updateData}) {
+function SocialLinksForm({data, updateData}: { data: PreviewData, updateData: (data: Partial<PreviewData>) => void }) {
     const [focusedField, setFocusedField] = useState<string | null>(null)
     const clearButtonRefs = useRef<Record<string, HTMLButtonElement | null>>({})
     const handleChange = (e) => {
@@ -713,64 +838,73 @@ function SocialLinksForm({data, updateData}) {
     };
     const socialMedias: SocialMedia[] = [
         {
+            key: 'f',
             name: 'Facebook',
             icon: "ph:facebook-logo-duotone",
             placeholder: 'https://fb.com/username',
         },
         {
+            key: 'x',
             name: 'X',
             icon: "ph:x-logo-duotone",
             placeholder: 'https://x.com/username',
         },
         {
+            key: 'ig',
             name: 'Instagram',
             icon: "ph:instagram-logo-duotone",
             placeholder: 'https://instagram.com/username',
         },
         {
+            key: 'gh',
             name: 'Github',
             icon: "ph:github-logo-duotone",
             placeholder: 'https://github.com/username',
         },
         {
+            key: 'tg',
             name: 'Telegram',
             icon: "ph:telegram-logo-duotone",
             placeholder: 'https://t.me/username',
         },
         {
+            key: 'lk',
             name: 'LinkedIn',
             icon: "ph:linkedin-logo-duotone",
             placeholder: 'https://linkedin.com/in/username',
         },
         {
+            key: 'e',
             name: 'Email',
             icon: "ph:envelope-duotone",
             placeholder: 'email@example.com',
         },
         {
+            key: 'y',
             name: 'Youtube',
             icon: "ph:youtube-logo-duotone",
             placeholder: 'https://youtube.com/username',
         },
         {
+            key: 'w',
             name: 'Whatsapp',
             icon: "ph:whatsapp-logo-duotone",
             placeholder: '+1234567890',
         },
         {
+            key: 'm',
             name: 'Mastodon',
             icon: "ph:mastodon-logo-duotone",
             placeholder: 'https://mastodon.social/@username',
         }
     ]
 
-
     return (
         <div className="shadow sm:overflow-hidden sm:rounded-md">
             <div className="grid grid-cols-2 gap-x-8 bg-white px-4 py-4 sm:p-6">
                 {socialMedias.map(sm => (
-                    <div key={sm.name} className="mb-4">
-                        <label htmlFor={sm.name} className="block text-sm font-normal text-gray-700 mb-1">
+                    <div key={sm.key} className="mb-4">
+                        <label htmlFor={sm.key} className="block text-sm font-normal text-gray-700 mb-1">
                             {sm.name}
                         </label>
                         <div className="mt-1 flex relative rounded-md shadow-sm">
@@ -779,23 +913,23 @@ function SocialLinksForm({data, updateData}) {
                                 <Icon icon={sm.icon} width={20} height={20}></Icon>
                             </span>
                             <input
+                                name={sm.key}
+                                id={sm.key}
                                 type="text"
-                                name={sm.name}
-                                id={sm.name}
                                 className="w-full px-3 py-2 pr-8 text-black text-xs font-light border border-gray-300 rounded-r-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 placeholder={sm.placeholder}
-                                value={data[sm.name] || ''}
+                                value={data[sm.key] || ''}
                                 onChange={handleChange}
-                                onFocus={() => setFocusedField(sm.name)}
-                                onBlur={(e) => handleInputBlur(sm.name, e)}
+                                onFocus={() => setFocusedField(sm.key)}
+                                onBlur={(e) => handleInputBlur(sm.key, e)}
                             />
                             <div className="absolute inset-y-0 right-0 flex items-center pr-2">
-                                {focusedField === sm.name && data[sm.name] && (
+                                {focusedField === sm.key && data[sm.key] && (
                                     <button
                                         type="button"
-                                        ref={el => clearButtonRefs.current[sm.name] = el}
+                                        ref={el => clearButtonRefs.current[sm.key] = el}
                                         className="inline-flex items-center px-2 py-1 border border-transparent text-xs rounded text-blue-600 hover:text-blue-800 focus:outline-none"
-                                        onClick={() => clearInput(sm.name)}>
+                                        onClick={() => clearInput(sm.key)}>
                                         <X className="h-4 w-4 stroke-[4px]"/>
                                     </button>
                                 )}
@@ -810,29 +944,32 @@ function SocialLinksForm({data, updateData}) {
 
 
 function ProfileForm({data, updateData}: { data: PreviewData, updateData: (data: PreviewData) => void }) {
-    const [image, setImage] = useState<string | null>(null)
-    const [crop, setCrop] = useState<Point>({x: 0, y: 0})
-    const [zoom, setZoom] = useState(1)
-    const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null)
-    const [isDragging, setIsDragging] = useState(false)
-    const fileInputRef = useRef<HTMLInputElement>(null)
-    const handleChange = (e) => {
-        updateData({[e.target.name]: e.target.value});
+    const [image, setImage] = useState<string | null>(null);
+    const [crop, setCrop] = useState<Point>({x: 0, y: 0});
+    const [zoom, setZoom] = useState(1);
+    const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+    const [isDragging, setIsDragging] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [uploading, setUploading] = useState(false);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        updateData({...data, [e.target.name]: e.target.value});
     };
 
     const onCropComplete = useCallback((croppedArea: Area, croppedAreaPixels: Area) => {
-        setCroppedAreaPixels(croppedAreaPixels)
-    }, [])
+        setCroppedAreaPixels(croppedAreaPixels);
+    }, []);
 
     const handleFileUpload = (file: File) => {
         if (file && file.size <= 10 * 1024 * 1024) { // 10MB limit
-            const reader = new FileReader()
-            reader.onload = (e) => setImage(e.target?.result as string)
-            reader.readAsDataURL(file)
+            const reader = new FileReader();
+            reader.onload = (e) => setImage(e.target?.result as string);
+            reader.readAsDataURL(file);
         } else {
-            alert('File size should not exceed 10MB')
+            alert('File size should not exceed 10MB');
         }
-    }
+    };
+
 
     const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault()
@@ -862,29 +999,92 @@ function ProfileForm({data, updateData}: { data: PreviewData, updateData: (data:
     const handleClick = () => {
         fileInputRef.current?.click()
     }
+    const createImage = (url: string): Promise<HTMLImageElement> =>
+        new Promise((resolve, reject) => {
+            const image = new Image();
+            image.addEventListener('load', () => resolve(image));
+            image.addEventListener('error', (error) => reject(error));
+            image.setAttribute('crossOrigin', 'anonymous');
+            image.src = url;
+        });
 
-    const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0]
-        if (file) {
-            handleFileUpload(file)
+    const getCroppedImg = async (
+        imageSrc: string,
+        pixelCrop: Area
+    ): Promise<Blob | null> => {
+        const image = await createImage(imageSrc);
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        if (!ctx) {
+            return null;
         }
-    }
 
-    const handleSubmit = (event: React.FormEvent) => {
-        event.preventDefault()
-        // Here you would typically send the form data to your backend
-        // console.log({name, about, photoUrl: photoUrl || image, croppedAreaPixels})
-    }
+        canvas.width = pixelCrop.width;
+        canvas.height = pixelCrop.height;
+
+        ctx.drawImage(
+            image,
+            pixelCrop.x,
+            pixelCrop.y,
+            pixelCrop.width,
+            pixelCrop.height,
+            0,
+            0,
+            pixelCrop.width,
+            pixelCrop.height
+        );
+
+        return new Promise((resolve) => {
+            canvas.toBlob((blob) => {
+                resolve(blob);
+            }, 'image/jpeg');
+        });
+    };
+    const handleUpload = async () => {
+        if (!image || !croppedAreaPixels) {
+            return;
+        }
+
+        const client = new WalrusClient();
+
+        try {
+            setUploading(true);
+            const croppedImage = await getCroppedImg(image, croppedAreaPixels);
+
+            if (croppedImage) {
+                const imageBlob = new Blob([croppedImage], {type: 'image/jpeg'});
+                const result = await client.store(imageBlob, {contentType: 'image/jpeg'});
+                if ('newlyCreated' in result) {
+                    updateData({
+                        ...data,
+                        u: `https://aggregator-devnet.walrus.space/v1/${result.newlyCreated.blobObject.blobId as string}`
+                    })
+                } else if ('alreadyCertified' in result) {
+                    updateData({
+                        ...data,
+                        u: `https://aggregator-devnet.walrus.space/v1/${result.alreadyCertified.blobId as string}`
+                    })
+                }
+
+            }
+        } catch (e: any) {
+            console.error(e);
+        } finally {
+            setUploading(false);
+            setImage(null); // Clear the image after upload
+        }
+    };
 
     return (
-        <form onSubmit={handleSubmit} className="mx-auto p-6 bg-white rounded-lg shadow-md">
+        <div className="mx-auto p-6 bg-white rounded-lg shadow-md">
             <div className="mb-4">
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Name</label>
                 <input
                     type="text"
                     id="name"
-                    name={"name"}
-                    value={data.name}
+                    name="name"
+                    value={data.n}
                     onChange={handleChange}
                     required
                     className="w-full px-3 py-2 text-black border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -894,11 +1094,11 @@ function ProfileForm({data, updateData}: { data: PreviewData, updateData: (data:
                 <label htmlFor="about" className="block text-sm font-medium text-gray-700 mb-1">About yourself</label>
                 <textarea
                     id="about"
-                    value={data.about}
-                    name={"about"}
+                    name="about"
+                    value={data.b}
                     onChange={handleChange}
                     required
-                    className="w-full px-3 py-2  text-black  border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 text-black border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     rows={4}
                 />
             </div>
@@ -907,13 +1107,14 @@ function ProfileForm({data, updateData}: { data: PreviewData, updateData: (data:
                 <input
                     type="text"
                     id="photoUrl"
-                    value={data.photoUrl}
-                    name={"photoUrl"}
+                    name="photoUrl"
+                    value={data.u}
                     onChange={handleChange}
                     placeholder="https://example.com/photo.jpg"
-                    className="w-full px-3 py-2  text-black  border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 text-black border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
             </div>
+
             <div
                 className={`relative h-64 w-full mb-4 border-2 border-dashed rounded-lg ${isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300'}`}
                 onDragEnter={handleDragEnter}
@@ -942,21 +1143,23 @@ function ProfileForm({data, updateData}: { data: PreviewData, updateData: (data:
                 <input
                     type="file"
                     ref={fileInputRef}
-                    onChange={handleFileInputChange}
+                    onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleFileUpload(file);
+                    }}
                     accept="image/*"
                     className="hidden"
                 />
             </div>
-            <button
-                type="submit"
-                className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            >
-                Save Profile
-            </button>
-        </form>
-    )
+            {image && (
+                <EnhancedUploadButton
+                    onClick={handleUpload}
+                    uploading={uploading}
+                />
+            )}
+        </div>
+    );
 }
-
 
 interface PreviewProps {
     data: PreviewData;
@@ -987,34 +1190,34 @@ function Preview({data}: PreviewProps) {
                             animate={{opacity: 1, y: 0}}
                             transition={{delay: 0.2, duration: 0.5}}
                         >
-                            {data.photoUrl && (
+                            {data.u && (
                                 <motion.div
                                     className="h-20 w-20 rounded-full overflow-hidden ring ring-slate-200 mx-auto"
                                     whileHover={{scale: 1.1}}
                                     whileTap={{scale: 0.9}}
                                 >
-                                    <img src={data.photoUrl} alt={data.name || 'Profile'}
+                                    <img src={data.u} alt={data.n || 'Profile'}
                                          className="h-full w-full object-cover"/>
                                 </motion.div>
                             )}
-                            {data.name && (
+                            {data.n && (
                                 <motion.h1
                                     className="text-2xl font-bold mt-4 text-slate-800"
                                     initial={{opacity: 0}}
                                     animate={{opacity: 1}}
                                     transition={{delay: 0.4, duration: 0.5}}
                                 >
-                                    {data.name}
+                                    {data.n}
                                 </motion.h1>
                             )}
-                            {data.about && (
+                            {data.b && (
                                 <motion.p
                                     className="text-sm mt-2 text-slate-600"
                                     initial={{opacity: 0}}
                                     animate={{opacity: 1}}
                                     transition={{delay: 0.6, duration: 0.5}}
                                 >
-                                    {data.about}
+                                    {data.b}
                                 </motion.p>
                             )}
                         </motion.div>
