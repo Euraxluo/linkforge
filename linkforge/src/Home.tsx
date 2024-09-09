@@ -452,7 +452,7 @@ function MintSection() {
     };
 
     const publish = () => {
-        const url = `${window.location.origin}/dynamic?data=${encodeData(data)}`;
+        const url = `${window.location.origin}/#/dynamic?data=${encodeData(data)}`;
         navigator.clipboard.writeText(url).then(() => {
             alert("Link copied to clipboard");
         });

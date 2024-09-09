@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {BrowserRouter, Route, Routes, useLocation, useParams} from "react-router-dom";
+import {HashRouter, Route, Routes, useLocation, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import LinkForge from "./Home";
 import {decodeData, PreviewData} from "./utils";
@@ -9,12 +9,12 @@ import {ErrorPage} from "./ErrorPage";
 
 export default function App() {
     return (
-        <BrowserRouter>
+        <HashRouter>
             <Routes>
                 <Route path="/" element={<LinkForge/>}/>
                 <Route path="/:template" element={<TemplateWrapper/>}/>
             </Routes>
-        </BrowserRouter>
+        </HashRouter>
     );
 }
 
