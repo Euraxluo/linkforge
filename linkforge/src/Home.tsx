@@ -374,7 +374,7 @@ export default function LinkForge() {
                 </div>
             </header>
 
-            <main className="container mx-auto px-4 py-8 relative z-10 min-h-[calc(100vh-64px-80px)]">
+            <main className="container mx-auto px-2 py-4 relative z-10 min-h-[calc(100vh-64px-80px)]">
                 <AnimatePresence mode="wait">
                     {activeSection === 'home' && (
                         <HomeSection setActiveSection={setActiveSection}/>
@@ -471,21 +471,21 @@ function MintSection() {
     };
 
     return (
-        <div className="h-screen grid grid-cols-3 divide-x">
-            <div className="col-span-2 h-screen flex flex-col bg-slate-100">
+        <div className="h-screen grid grid-cols-12 md:grid-cols-3 divide-x">
+            <div className="col-span-8 md:col-span-2 h-screen flex flex-col bg-slate-100">
                 <div className="border-t bg-white flex items-center">
                     <button
                         onClick={prefillDemoData}
                         className="h-12 flex items-center space-x-2 px-4 border-r text-xs font-medium bg-white text-slate-700"
                     >
-                        <span>Add demo data</span>
+                        <span className="hidden md:block">Add demo data</span>
                         <Icon icon="mdi:code-json" width={18} height={18}/>
                     </button>
                     <button
                         onClick={publish}
                         className="h-12 flex items-center space-x-2 px-4 border-r text-xs font-medium bg-white text-slate-700"
                     >
-                        <span>Publish</span>
+                        <span className="hidden md:block">Publish</span>
                         <Icon icon="ph:paper-plane-tilt-bold" width={18} height={18}/>
                     </button>
                     <div className="flex-1"></div>
@@ -493,21 +493,20 @@ function MintSection() {
                         onClick={publish}
                         className="h-12 flex items-center space-x-2 px-4 border-r text-xs font-medium bg-white text-slate-700"
                     >
-                        <span>Connection</span>
+                        <span className="hidden md:block">Connection</span>
                         <Icon icon="uil:wallet" width={24} height={24}></Icon>
                     </button>
                 </div>
-
                 <div className="flex-1 overflow-y-auto p-8">
                     <ProfileForm data={data} updateData={updateData}/>
-                    <div className="hidden sm:block" aria-hidden="true">
-                        <div className="py-5">
+                    <div className="py-2 sm:py-5" aria-hidden="true">
+                        <div className="hidden sm:block sm:py-5">
                             <div className="border-t border-gray-200"></div>
                         </div>
                     </div>
                     <SocialLinksForm data={data} updateData={updateData}/>
-                    <div className="hidden sm:block" aria-hidden="true">
-                        <div className="py-5">
+                    <div className="py-2 sm:py-5" aria-hidden="true">
+                        <div className="hidden sm:block sm:py-5">
                             <div className="border-t border-gray-200"></div>
                         </div>
                     </div>
@@ -901,7 +900,7 @@ function SocialLinksForm({data, updateData}: { data: PreviewData, updateData: (d
 
     return (
         <div className="shadow sm:overflow-hidden sm:rounded-md">
-            <div className="grid grid-cols-2 gap-x-8 bg-white px-4 py-4 sm:p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 bg-white px-4 py-4 sm:p-6">
                 {socialMedias.map(sm => (
                     <div key={sm.key} className="mb-4">
                         <label htmlFor={sm.key} className="block text-sm font-normal text-gray-700 mb-1">
@@ -1177,7 +1176,7 @@ function Preview({data}: PreviewProps) {
             transition={{duration: 0.5}}
         >
             <motion.div
-                className="w-[340px] h-[729px] overflow-hidden rounded-[3rem] ring-8 ring-slate-800 bg-white shadow-xl"
+                className="w-[150px] h-[512px] md:w-[340px] md:h-[729px] overflow-hidden rounded-[3rem] ring-8 ring-slate-800 bg-white shadow-xl"
                 initial={{scale: 0.9, y: 50}}
                 animate={{scale: 1, y: 0}}
                 transition={{type: "spring", stiffness: 260, damping: 20}}
