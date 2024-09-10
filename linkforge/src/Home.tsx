@@ -1082,7 +1082,7 @@ function ProfileForm({data, updateData}: { data: PreviewData, updateData: (data:
                 <input
                     type="text"
                     id="name"
-                    name="name"
+                    name="n"
                     value={data.n}
                     onChange={handleChange}
                     required
@@ -1093,7 +1093,7 @@ function ProfileForm({data, updateData}: { data: PreviewData, updateData: (data:
                 <label htmlFor="about" className="block text-sm font-medium text-gray-700 mb-1">About yourself</label>
                 <textarea
                     id="about"
-                    name="about"
+                    name="b"
                     value={data.b}
                     onChange={handleChange}
                     required
@@ -1106,7 +1106,7 @@ function ProfileForm({data, updateData}: { data: PreviewData, updateData: (data:
                 <input
                     type="text"
                     id="photoUrl"
-                    name="photoUrl"
+                    name="u"
                     value={data.u}
                     onChange={handleChange}
                     placeholder="https://example.com/photo.jpg"
