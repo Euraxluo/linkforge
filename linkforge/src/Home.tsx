@@ -479,7 +479,7 @@ function MintSection() {
                 ],
                 n: "Example",
                 b: "I'm Developer.",
-                u: "https://i.insider.com/56743fad72f2c12a008b6cc0",
+                u: `${window.location.origin}/placeholder.svg`,
                 f: "https://www.facebook.com/username",
                 x: "https://x.com/username",
                 ig: "https://www.instagram.com/username",
