@@ -7,16 +7,30 @@ import {Template as SimpleTemplate} from "./template/Simple";
 import {Template as DynamicTemplate} from "./template/Dynamic";
 import {ErrorPage} from "./ErrorPage";
 
+import {Suiet, SuiWeb3ConfigProvider} from '@ant-design/web3-sui';
+import {NETWORK, networkConfig} from "./networkConfig";
+
+
 export default function App() {
     return (
-        <HashRouter>
-            <Routes>
-                <Route path="/" element={<LinkForge/>}/>
-                <Route path="/:template" element={<TemplateWrapper/>}/>
-            </Routes>
-        </HashRouter>
+        <SuiWeb3ConfigProvider
+            wallets={[Suiet()]}
+            balance
+            networkConfig={networkConfig}
+            sns={true}
+            autoConnect={true}
+            defaultNetwork={NETWORK}
+        >
+            <HashRouter>
+                <Routes>
+                    <Route path="/" element={<LinkForge/>}/>
+                    <Route path="/:template" element={<TemplateWrapper/>}/>
+                </Routes>
+            </HashRouter>
+        </SuiWeb3ConfigProvider>
     );
 }
+
 
 const TemplateWrapper: React.FC = () => {
     const location = useLocation();

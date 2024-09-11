@@ -11,7 +11,6 @@ import {
     X,
     CirclePlus,
     GripVertical,
-    Loader2,
     LoaderPinwheel,
     CircleFadingArrowUp
 } from 'lucide-react'
@@ -20,6 +19,13 @@ import Cropper from 'react-easy-crop'
 import {Point, Area} from 'react-easy-crop/types'
 import {encodeData, generateSocialIcons, Link, PreviewData} from "./utils";
 import {WalrusClient} from 'tuskscript'
+import {useNetworkVariable} from "./networkConfig";
+import {ConnectButton, Connector, NFTCard, NFTImage} from "@ant-design/web3";
+import {useCurrentAccount, useSuiClient, useSignAndExecuteTransaction} from "@mysten/dapp-kit";
+import {Transaction} from "@mysten/sui/transactions";
+import {getOwnedObjects} from "./client";
+import UserWidget from "./link/avatar";
+import {useLinkData} from "./link/useLinkData";
 
 interface SeaCreature {
     id: number
@@ -333,6 +339,7 @@ export default function LinkForge() {
         setSeaCreatures(newCreatures)
     }, [])
 
+    const {linkData} = useLinkData()
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-500 to-cyan-600 text-white relative overflow-hidden">
             {/*bg*/}
@@ -342,7 +349,6 @@ export default function LinkForge() {
                     <SeaCreature key={creature.id} {...creature} />
                 ))}
             </div>
-
             <header className="bg-blue-600 bg-opacity-50 backdrop-blur-md shadow-lg sticky top-0 z-50">
                 <div className="container mx-auto px-4 py-4">
                     <nav className="flex justify-between items-center">
@@ -355,8 +361,10 @@ export default function LinkForge() {
                                   className="fill-emerald-400 mr-2 stroke-emerald-400 stroke-[10px] hover:stroke-emerald-400 hover:stroke-[4px]"/>
                             LinkForge
                         </div>
+
                         {/*menu*/}
                         <div className="space-x-4">
+
                             <button
                                 onClick={() => setActiveSection('home')}
                                 className="hover:underline transition-transform duration-200 ease-in-out hover:scale-105 active:scale-95"
@@ -369,6 +377,29 @@ export default function LinkForge() {
                             >
                                 Mint
                             </button>
+                            <button
+                                className="hover:underline transition-transform duration-200 ease-in-out hover:scale-105 active:scale-95"
+                            >
+                                <UserWidget
+                                    customColors={{
+                                        from: 'from-blue-600',
+                                        to: 'to-yellow-500',
+                                        text: 'text-white',
+                                        hover: 'hover:from-blue-600 hover:to-yellow-600'
+                                    }}
+                                    size="sm"
+                                    rounded="lg"
+                                />
+                            </button>
+
+
+                            <Connector>
+                                <ConnectButton
+                                    avatar={{
+                                        src: linkData?.display.image_url,
+                                    }}
+                                />
+                            </Connector>
                         </div>
                     </nav>
                 </div>
@@ -463,13 +494,75 @@ function MintSection() {
         );
     };
 
-    const publish = () => {
+    const preview = () => {
         const url = `${window.location.origin}/#/dynamic?data=${encodeData(data)}`;
-        navigator.clipboard.writeText(url).then(() => {
-            alert("Link copied to clipboard");
-        });
+        // 检查是否支持 window.open
+        if (window.open) {
+            window.open(url, '_blank').focus();
+        } else {
+            navigator.clipboard.writeText(url).then(() => {
+                alert("Preview Link Copied to Clipboard,Please View in New Tab");
+            });
+        }
     };
 
+
+    const [quantity, setQuantity] = useState(2); // number of red packets
+
+    const [amount, setAmount] = useState(1); // number of coin
+    const [coinType, setCoinType] = useState("0x2::sui::SUI");
+    const [coinDecimals, setCoinDecimals] = useState(9);
+
+    const client = useSuiClient();
+    const currentAccount = useCurrentAccount();
+
+    const linkforgePackageId = useNetworkVariable("linkforgePackageId");
+    const linkforgeStoreObjectId = useNetworkVariable("linkforgeStoreObjectId");
+    const {mutate: signAndExecuteTransaction} = useSignAndExecuteTransaction({
+        execute: async ({bytes, signature}) =>
+            await client.executeTransactionBlock({
+                transactionBlock: bytes,
+                signature,
+                options: {
+                    showRawEffects: true,
+                    showObjectChanges: true,
+                },
+            }),
+    });
+
+
+    const forge = () => {
+        if (!currentAccount) {
+            alert("Please connect your wallet first.");
+            return;
+        }
+        // 铸造,判断钱包是否正确链接,链接是否正确,是否有足够的余额
+        const txb = new Transaction();
+        txb.setGasBudget(1_000_000_000)
+        txb.setSender(currentAccount?.address as string);
+        // const [given_coin] = txb.splitCoins(txb.gas, [10 ** coinDecimals * amount]);
+        txb.moveCall({
+            arguments: [
+                txb.pure.string(data.n),
+                txb.pure.string(data.n),
+                txb.pure.string(data.u),
+                txb.pure.string(encodeData(data)),
+                txb.object(linkforgeStoreObjectId),
+            ],
+            target: `${linkforgePackageId}::link::new`,
+        });
+        signAndExecuteTransaction(
+            {
+                transaction: txb,
+            },
+            {
+                onSuccess: (result) => {
+                    console.log('object changes', result.objectChanges);
+                    alert(result.digest);
+                },
+            },
+        );
+    };
     return (
         <div className="h-screen grid grid-cols-12 md:grid-cols-3 divide-x">
             <div className="col-span-8 md:col-span-2 h-screen flex flex-col bg-slate-100">
@@ -482,19 +575,19 @@ function MintSection() {
                         <Icon icon="mdi:code-json" width={18} height={18}/>
                     </button>
                     <button
-                        onClick={publish}
+                        onClick={preview}
                         className="h-12 flex items-center space-x-2 px-4 border-r text-xs font-medium bg-white text-slate-700"
                     >
-                        <span className="hidden md:block">Publish</span>
+                        <span className="hidden md:block">Preview</span>
                         <Icon icon="ph:paper-plane-tilt-bold" width={18} height={18}/>
                     </button>
                     <div className="flex-1"></div>
                     <button
-                        onClick={publish}
+                        onClick={forge}
                         className="h-12 flex items-center space-x-2 px-4 border-r text-xs font-medium bg-white text-slate-700"
                     >
-                        <span className="hidden md:block">Connection</span>
-                        <Icon icon="uil:wallet" width={24} height={24}></Icon>
+                        <span className="hidden md:block">Forge</span>
+                        <Icon icon="icon-park:gavel" width={24} height={24}></Icon>
                     </button>
                 </div>
                 <div className="flex-1 overflow-y-auto p-8">
