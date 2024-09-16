@@ -15,7 +15,6 @@ export default function App() {
     return (
         <SuiWeb3ConfigProvider
             wallets={[Suiet()]}
-            balance
             networkConfig={networkConfig}
             sns={true}
             autoConnect={true}

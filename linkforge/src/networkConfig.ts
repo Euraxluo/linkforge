@@ -18,9 +18,9 @@ interface Variables {
 
 const {networkConfig, useNetworkVariable, useNetworkVariables} =
     createNetworkConfig({
-        localnet: {url: getFullnodeUrl('localnet')},
-        devnet: {url: getFullnodeUrl('devnet')},
-        mainnet: {url: getFullnodeUrl('mainnet')},
+        // localnet: {url: getFullnodeUrl('localnet')},
+        // devnet: {url: getFullnodeUrl('devnet')},
+        // mainnet: {url: getFullnodeUrl('mainnet')},
         testnet: {
             url: getFullnodeUrl('testnet'),
             variables: {

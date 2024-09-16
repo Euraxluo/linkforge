@@ -1,6 +1,6 @@
 import {motion, AnimatePresence, Variants} from 'framer-motion'
 import * as Tabs from '@radix-ui/react-tabs'
-import {useEffect, useState, useCallback, useRef} from "react";
+import {useEffect, useState, useCallback, useRef, useMemo} from "react";
 import * as React from 'react';
 import {DragDropContext, Droppable, Draggable} from 'react-beautiful-dnd'
 import {
@@ -20,12 +20,10 @@ import {Point, Area} from 'react-easy-crop/types'
 import {encodeData, generateSocialIcons, Link, PreviewData} from "./utils";
 import {WalrusClient} from 'tuskscript'
 import {useNetworkVariable} from "./networkConfig";
-import {ConnectButton, Connector, NFTCard, NFTImage} from "@ant-design/web3";
-import {useCurrentAccount, useSuiClient, useSignAndExecuteTransaction} from "@mysten/dapp-kit";
+import {useCurrentAccount, useSuiClient, useSignAndExecuteTransaction, useCurrentWallet} from "@mysten/dapp-kit";
 import {Transaction} from "@mysten/sui/transactions";
-import {getOwnedObjects} from "./client";
-import UserWidget from "./link/avatar";
 import {useLinkData} from "./link/useLinkData";
+import {ConnectButton, Connector, MenuItemType} from "@ant-design/web3";
 
 interface SeaCreature {
     id: number
@@ -316,6 +314,9 @@ function HomeSection({setActiveSection}: HomeSectionProps) {
 export default function LinkForge() {
     const [activeSection, setActiveSection] = useState('home')
     const [seaCreatures, setSeaCreatures] = useState<SeaCreature[]>([])
+    const {linkData} = useLinkData();
+    const currentAccount = useCurrentAccount();
+    console.log(currentAccount)
     useEffect(() => {
         const creatures = [
             {icon: "emojione-v1:fish", count: 30, minSize: 24, maxSize: 24},
@@ -339,7 +340,14 @@ export default function LinkForge() {
         setSeaCreatures(newCreatures)
     }, [])
 
-    const {linkData} = useLinkData()
+    const buttonClasses = `
+    flex items-center space-x-2 px-4 py-2 rounded-lg border-0
+    bg-gradient-to-r from-blue-600 via-cyan-500 to-teal-400
+    hover:from-blue-500 hover:via-cyan-100 hover:to-teal-500
+    text-white font-medium text-sm
+    shadow-lg shadow-cyan-900/30 hover:shadow-cyan-100/50
+    transition-all duration-300 ease-in-out hover:scale-105`
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-500 to-cyan-600 text-white relative overflow-hidden">
             {/*bg*/}
@@ -363,42 +371,41 @@ export default function LinkForge() {
                         </div>
 
                         {/*menu*/}
-                        <div className="space-x-4">
-
-                            <button
-                                onClick={() => setActiveSection('home')}
-                                className="hover:underline transition-transform duration-200 ease-in-out hover:scale-105 active:scale-95"
-                            >
-                                Home
-                            </button>
+                        <div className="flex space-x-4">
                             <button
                                 onClick={() => setActiveSection('mint')}
                                 className="hover:underline transition-transform duration-200 ease-in-out hover:scale-105 active:scale-95"
                             >
                                 Mint
                             </button>
-                            <button
-                                className="hover:underline transition-transform duration-200 ease-in-out hover:scale-105 active:scale-95"
-                            >
-                                <UserWidget
-                                    customColors={{
-                                        from: 'from-blue-600',
-                                        to: 'to-yellow-500',
-                                        text: 'text-white',
-                                        hover: 'hover:from-blue-600 hover:to-yellow-600'
-                                    }}
-                                    size="sm"
-                                    rounded="lg"
-                                />
-                            </button>
-
-
                             <Connector>
-                                <ConnectButton
-                                    avatar={{
-                                        src: linkData?.display.image_url,
-                                    }}
-                                />
+                                {linkData && currentAccount ? (
+                                    <ConnectButton
+                                        avatar={{
+                                            src: linkData?.display.image_url,
+                                        }}
+                                        account={{
+                                            address: linkData?.display.creator,
+                                            name: linkData?.display.name,
+                                        }}
+                                        actionsMenu={{
+                                            extraItems: [{
+                                                key: '1',
+                                                label: 'Go to Link',
+                                                onClick: () => {
+                                                    if (currentAccount && linkData?.display.link) {
+                                                        window.open(linkData.display.link, '_blank')?.focus();
+                                                    } else {
+                                                        alert("Not Connected or No link found");
+                                                    }
+                                                }
+                                            }]
+                                        }}
+                                        className={buttonClasses}
+                                    />
+                                ) : (
+                                    <ConnectButton className={buttonClasses}/>
+                                )}
                             </Connector>
                         </div>
                     </nav>

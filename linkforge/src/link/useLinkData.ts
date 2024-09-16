@@ -7,6 +7,7 @@ export interface LinkData {
     objectId: string
     display: {
         name?: string
+        creator?: string
         image_url?: string
         link?: string
     }
