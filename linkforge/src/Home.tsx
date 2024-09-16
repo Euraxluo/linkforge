@@ -28,6 +28,8 @@ import {isEqual} from 'lodash';
 import {TransactionVisualizer} from "./TransactionVisualizer";
 import {Template as SimpleTemplate} from "./template/Simple";
 import {Template as DynamicTemplate} from "./template/Dynamic";
+import {CustomDropdown, CustomInput} from "./CustomInput";
+import {encode} from "js-base64";
 
 interface SeaCreature {
     id: number
@@ -170,7 +172,7 @@ interface HomeSectionProps {
 }
 
 function HomeSection({setActiveSection}: HomeSectionProps) {
-    const [activeTab, setActiveTab] = useState('preview')
+    const [activeTab, setActiveTab] = useState('video')
     const [metadata, setMetadata] = useState({
         "ls": [
             {
@@ -282,14 +284,16 @@ function HomeSection({setActiveSection}: HomeSectionProps) {
                             <AnimatePresence>
                                 {activeTab === 'preview' && (
                                     <motion.div
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        exit={{ opacity: 0 }}
-                                        transition={{ duration: 0.2 }}
+                                        initial={{opacity: 0}}
+                                        animate={{opacity: 1}}
+                                        exit={{opacity: 0}}
+                                        transition={{duration: 0.2}}
                                     >
-                                        <div className="flex flex-col md:flex-row items-stretch space-y-4 md:space-y-0 md:space-x-4">
+                                        <div
+                                            className="flex flex-col md:flex-row items-stretch space-y-4 md:space-y-0 md:space-x-4">
                                             <div className="w-full md:w-1/2">
-                                                <div className="bg-gray-100 p-2 rounded-lg shadow-inner h-[600px] overflow-hidden">
+                                                <div
+                                                    className="bg-gray-100 p-2 rounded-lg shadow-inner h-[600px] overflow-hidden">
                                                     <iframe
                                                         src={`${sbtMetadata.display.link}`}
                                                         className="w-full h-full rounded-md shadow-sm"
@@ -298,9 +302,11 @@ function HomeSection({setActiveSection}: HomeSectionProps) {
                                                 </div>
                                             </div>
                                             <div className="w-full md:w-1/2">
-                                                <div className="bg-gray-800 p-4 rounded-lg shadow-lg h-[600px] overflow-hidden">
+                                                <div
+                                                    className="bg-gray-800 p-4 rounded-lg shadow-lg h-[600px] overflow-hidden">
                                                     <div className="flex items-center justify-between mb-2">
-                                                        <h3 className="text-white text-lg font-semibold">Metadata Preview</h3>
+                                                        <h3 className="text-white text-lg font-semibold">Metadata
+                                                            Preview</h3>
                                                     </div>
                                                     <pre className="text-green-400 overflow-auto h-[calc(100%-2rem)]">
                                                       <code>{JSON.stringify(metadata, null, 2)}</code>
@@ -319,17 +325,19 @@ function HomeSection({setActiveSection}: HomeSectionProps) {
                             <AnimatePresence>
                                 {activeTab === 'metadata' && (
                                     <motion.div
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        exit={{ opacity: 0 }}
-                                        transition={{ duration: 0.2 }}
+                                        initial={{opacity: 0}}
+                                        animate={{opacity: 1}}
+                                        exit={{opacity: 0}}
+                                        transition={{duration: 0.2}}
                                     >
                                         <div className="flex flex-col space-y-4">
                                             <div>
                                                 <h3 className="text-lg font-semibold mb-2">Metadata Structure</h3>
                                                 <p className="text-gray-600">
-                                                    This is the complete metadata structure for your SBT (Soul Bound Token). It
-                                                    includes all the information about the token, including social links, profile
+                                                    This is the complete metadata structure for your SBT (Soul Bound
+                                                    Token). It
+                                                    includes all the information about the token, including social
+                                                    links, profile
                                                     data, and external links.
                                                 </p>
                                             </div>
@@ -351,10 +359,10 @@ function HomeSection({setActiveSection}: HomeSectionProps) {
                     <Tabs.Content value="video" asChild forceMount>
                         <div className={`p-4 ${activeTab !== 'video' ? 'hidden' : ''}`}>
                             <div className="max-w-4xl mx-auto">
-                                <div className="relative" style={{ paddingTop: '56.25%' }}>
+                                <div className="relative" style={{paddingTop: '56.25%'}}>
                                     <iframe
                                         ref={iframeRef}
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                         allowFullScreen
                                         className="absolute inset-0 w-full h-full"
                                         aria-hidden={activeTab !== 'video'}
@@ -526,9 +534,18 @@ function MintSection() {
     const [originalIdentify, setOriginalIdentify] = useState<string | null>(null);
     // 模板
     const [template, setTemplate] = useState('simple');
+    const options = [
+        {value: 'simple', label: 'Simple'},
+        {value: 'dynamic', label: 'Dynamic'},
+    ]
     // 用户id?
-    const [customId, setCustomId] = useState('');
-
+    const [customId, setCustomId] = React.useState('')
+    const [isValid, setIsValid] = React.useState(true)
+    const allowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-"
+    const handleIdInputChange = (value: string) => {
+        setCustomId(value)
+        setIsValid(/^[A-Za-z0-9-]*$/.test(value))
+    }
     // 链接数据hook
     const linkData = useLinkData();
     // 用于查询数据
@@ -599,6 +616,7 @@ function MintSection() {
         console.log("isEqual", isEqual(data, originalData))
         console.log("originalData", originalData)
         console.log("data", data)
+        console.log("encodeData", encodeData(data))
         return !isEqual(data, originalData);
     };
     // 获取具有变化的fields
@@ -677,13 +695,21 @@ function MintSection() {
         txb.setGasBudget(1_000_000_000);
         txb.setSender(currentAccount.address);
 
-        // const ALLOWED_LABEL_CHARS: vector<u8> = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-";
 
         if (!originalData) {
+            let creatLinkId = `0x${currentAccount.address.substring(2, 8)}${currentAccount.address.substring(currentAccount.address.length - 6)}`;
+            const regex = new RegExp(`[^${allowedChars}]`, 'g');
+            if (currentAccount && currentAccount.label) {
+                creatLinkId = currentAccount.label.replace(regex, '');
+            }
+            if (customId) {
+                creatLinkId = customId
+            }
+            console.log("creatLinkId", creatLinkId)
             // New link creation
             txb.moveCall({
                 arguments: [
-                    txb.pure.string(customId || currentAccount.address),
+                    txb.pure.string(customId || creatLinkId),
                     txb.pure.string(data.n),
                     txb.pure.string(data.u),
                     txb.pure.string(encodeData(data)),
@@ -742,21 +768,22 @@ function MintSection() {
                 });
                 console.log("forge move call set_template")
             }
+            if (customId && customId !== originalIdentify) {
+                const [given_coin] = txb.splitCoins(txb.gas, [1 ** coinDecimals * amount]);
+                txb.moveCall({
+                    arguments: [
+                        txb.object(linkData.linkData.objectId),
+                        txb.object(linkforgeStoreObjectId),
+                        txb.pure.string(customId),
+                        txb.object(given_coin),
+                    ],
+                    target: `${linkforgePackageId}::link::set_identify`,
+                });
+                console.log("forge move call set_template")
+            }
         }
 
-        if (customId && customId !== originalIdentify) {
-            const [given_coin] = txb.splitCoins(txb.gas, [1 ** coinDecimals * amount]);
-            txb.moveCall({
-                arguments: [
-                    txb.object(linkData.linkData.objectId),
-                    txb.object(linkforgeStoreObjectId),
-                    txb.pure.string(customId),
-                    txb.object(given_coin),
-                ],
-                target: `${linkforgePackageId}::link::set_identify`,
-            });
-            console.log("forge move call set_template")
-        }
+
         signAndExecuteTransaction(
             {
                 transaction: txb,
@@ -778,6 +805,7 @@ function MintSection() {
     const updateData = (newData) => {
         setData(prevData => ({...prevData, ...newData}));
     };
+
 
     return (
         <div className="h-screen grid grid-cols-12 md:grid-cols-3 divide-x">
@@ -813,21 +841,18 @@ function MintSection() {
                 <div className="flex-1 overflow-y-auto px-8 pt-2 mb-4">
                     <div className="sm:overflow-hidden sm:rounded-md shadow-sm">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-1 bg-white px-2 py-2 sm:p-2">
-                            <input
-                                type="text"
+                            <CustomInput
                                 value={customId}
-                                onChange={(e) => setCustomId(e.target.value)}
-                                placeholder="Custom ID"
-                                className="w-full px-3 py-2 pr-8 text-black text-xs font-light border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                onChange={handleIdInputChange}
+                                isValid={isValid}
+                                placeholder="Enter custom ID"
                             />
-                            <select
+                            <CustomDropdown
+                                options={options}
                                 value={template}
-                                onChange={(e) => setTemplate(e.target.value)}
-                                className="w-full px-3 py-2 pr-8 text-black text-xs font-light border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                <option value="simple">Simple</option>
-                                <option value="dynamic">Dynamic</option>
-                            </select>
+                                onChange={setTemplate}
+                                placeholder="Select a template"
+                            />
                         </div>
                     </div>
                     <div className="py-1 sm:py-1" aria-hidden="true">

@@ -1,11 +1,26 @@
 import {decode, encode} from "js-base64";
 
-export const encodeData = (obj) => {
+export const encodeData = (obj: PreviewData) => {
     return encode(JSON.stringify(obj));
 };
 
-export const decodeData = (base64) => JSON.parse(decode(base64));
+// export const encodeSignData = (obj: PreviewData) => {
+//     const content: PreviewData = JSON.parse(JSON.stringify(obj))
+//     content.n = encode(obj.n)
+//     return encode(JSON.stringify(content));
+// };
 
+export const decodeData = (base64: string) => {
+    const data: PreviewData = JSON.parse(decode(base64))
+    return data
+};
+
+//
+// export const decodeSignData = (base64: string) => {
+//     const data: PreviewData = JSON.parse(decode(base64))
+//     data.n = decode(data.n)
+//     return data
+// };
 
 export interface Link {
     u: string;
@@ -89,7 +104,7 @@ export function extractDataFromURL(link: string): {
 
     // Step 4: Parse the JSON
     try {
-        const parsedData: PreviewData = JSON.parse(decodedData);
+        const parsedData: PreviewData  = decodeData(dataParam);
         return {
             template,
             data: parsedData
