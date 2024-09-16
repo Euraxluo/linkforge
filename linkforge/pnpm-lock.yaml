@@ -66,6 +66,9 @@ importers:
       '@iconify-icon/react':
         specifier: ^2.1.0
         version: 2.1.0(react@18.3.1)
+      '@tailwindcss/aspect-ratio':
+        specifier: ^0.4.2
+        version: 0.4.2(tailwindcss@3.4.11)
       '@types/react':
         specifier: ^18.3.5
         version: 18.3.5
@@ -1086,6 +1089,11 @@ packages:
 
   '@suchipi/femver@1.0.0':
     resolution: {integrity: sha512-bprE8+K5V+DPX7q2e2K57ImqNBdfGHDIWaGI5xHxZoxbKOuQZn4wzPiUxOAHnsUr3w3xHrWXwN7gnG/iIuEMIg==}
+
+  '@tailwindcss/aspect-ratio@0.4.2':
+    resolution: {integrity: sha512-8QPrypskfBa7QIMuKHg2TA7BqES6vhBrDLOv8Unb6FcFyd3TjKbc6lcmb9UPQHxfl24sXoJ41ux/H7qQQvfaSQ==}
+    peerDependencies:
+      tailwindcss: '>=2.0.0 || >=3.0.0 || >=3.0.0-alpha.1'
 
   '@tanstack/query-core@5.55.4':
     resolution: {integrity: sha512-uoRqNnRfzOH4OMIoxj8E2+Us89UIGXfau981qYJWsNMkFS1GXR4UIyzUTVGq4N7SDLHgFPpo6IOazqUV5gkMZA==}
@@ -3822,6 +3830,10 @@ snapshots:
       '@scure/base': 1.1.8
 
   '@suchipi/femver@1.0.0': {}
+
+  '@tailwindcss/aspect-ratio@0.4.2(tailwindcss@3.4.11)':
+    dependencies:
+      tailwindcss: 3.4.11
 
   '@tanstack/query-core@5.55.4': {}
 

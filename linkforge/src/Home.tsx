@@ -17,7 +17,7 @@ import {
 import {Icon} from '@iconify-icon/react';
 import Cropper from 'react-easy-crop'
 import {Point, Area} from 'react-easy-crop/types'
-import {encodeData, extractDataFromURL, generateSocialIcons, Link, PreviewData} from "./utils";
+import {encodeData, extractDataFromURL, Link, PreviewData} from "./utils";
 import {WalrusClient} from 'tuskscript'
 import {useNetworkVariable} from "./networkConfig";
 import {useCurrentAccount, useSuiClient, useSignAndExecuteTransaction, useCurrentWallet} from "@mysten/dapp-kit";
@@ -26,6 +26,8 @@ import {useLinkData} from "./link/useLinkData";
 import {ConnectButton, Connector} from "@ant-design/web3";
 import {isEqual} from 'lodash';
 import {TransactionVisualizer} from "./TransactionVisualizer";
+import {Template as SimpleTemplate} from "./template/Simple";
+import {Template as DynamicTemplate} from "./template/Dynamic";
 
 interface SeaCreature {
     id: number
@@ -171,7 +173,70 @@ interface HomeSectionProps {
 }
 
 function HomeSection({setActiveSection}: HomeSectionProps) {
-    const [activeTab, setActiveTab] = useState('og')
+    const [activeTab, setActiveTab] = useState('preview')
+    const [metadata, setMetadata] = useState({
+        "ls": [
+            {
+                "l": "wrapper",
+                "i": "ph:globe-duotone",
+                "u": "https://wrapper.space"
+            },
+            {
+                "i": "ph:globe-duotone",
+                "l": "linkforge",
+                "u": "https://linkforge.walrus.site"
+            },
+            {
+                "i": "ph:globe-duotone",
+                "l": "secretlink",
+                "u": "https://secretlink.walrus.site"
+            }
+        ],
+        "n": "Euraxluo",
+        "b": "i am working for  `Wrapper Protocol` and `Linkforge`",
+        "u": "https://aggregator-devnet.walrus.space/v1/Kb64CbtRLKKGXyuDpUGzyBE6pSWap62GzmE56l1X85U",
+        "f": "",
+        "x": "https://x.com/luo_eurax",
+        "ig": "",
+        "e": "euraxluo@outlook.com",
+        "gh": "https://github.com/euraxluo",
+        "tg": "https://t.me/euraxluo",
+        "w": "",
+        "y": "",
+        "lk": "",
+        "m": ""
+    })
+    const [sbtMetadata, setSbtMetadata] = useState({
+            "objectId": "0x493e4f1f61028c4b846181ccb85a17f4195fbf37dc3a04393291608047e7f1b2",
+            "display": {
+                "creator": "0xbeecdd12658442fb256349b577c869083b516509891b2913742d99add93ac3d2",
+                "description": "A soulbound token by 0xbeecdd12658442fb256349b577c869083b516509891b2913742d99add93ac3d2, marked euraxluo, named Euraxluo—an unbreakable, timeless reflection on the chain.",
+                "identify": "euraxluo",
+                "image_url": "https://aggregator-devnet.walrus.space/v1/Kb64CbtRLKKGXyuDpUGzyBE6pSWap62GzmE56l1X85U",
+                "link": "https://52uzquxqktipwjlkcdmlvz249kqvpbrm9f27dcqpv81kqair46.walrus.site/#/dynamic?data=eyJscyI6W3sibCI6IndyYXBwZXIiLCJpIjoicGg6Z2xvYmUtZHVvdG9uZSIsInUiOiJodHRwczovL3dyYXBwZXIuc3BhY2UifSx7ImkiOiJwaDpnbG9iZS1kdW90b25lIiwibCI6Imxpbmtmb3JnZSIsInUiOiJodHRwczovL2xpbmtmb3JnZS53YWxydXMuc2l0ZSJ9LHsiaSI6InBoOmdsb2JlLWR1b3RvbmUiLCJsIjoic2VjcmV0bGluayIsInUiOiJodHRwczovL3NlY3JldGxpbmsud2FscnVzLnNpdGUifV0sIm4iOiJFdXJheGx1byIsImIiOiJpIGFtIHdvcmtpbmcgZm9yICBgV3JhcHBlciBQcm90b2NvbGAgYW5kIGBMaW5rZm9yZ2VgIiwidSI6Imh0dHBzOi8vYWdncmVnYXRvci1kZXZuZXQud2FscnVzLnNwYWNlL3YxL0tiNjRDYnRSTEtLR1h5dURwVUd6eUJFNnBTV2FwNjJHem1FNTZsMVg4NVUiLCJmIjoiIiwieCI6Imh0dHBzOi8veC5jb20vbHVvX2V1cmF4IiwiaWciOiIiLCJlIjoiZXVyYXhsdW9Ab3V0bG9vay5jb20iLCJnaCI6Imh0dHBzOi8vZ2l0aHViLmNvbS9ldXJheGx1byIsInRnIjoiaHR0cHM6Ly90Lm1lL2V1cmF4bHVvIiwidyI6IiIsInkiOiIiLCJsayI6IiIsIm0iOiIifQ==",
+                "name": "Euraxluo",
+                "project_url": "https://52uzquxqktipwjlkcdmlvz249kqvpbrm9f27dcqpv81kqair46.walrus.site"
+            }
+        }
+    )
+    const linkData = useLinkData();
+    const {data: metadataData} = useMemo(() => {
+        if (linkData.linkData?.display?.link) {
+            return extractDataFromURL(linkData.linkData.display.link);
+        }
+        return {template: "", data: null};
+    }, [linkData.linkData?.display?.link]);
+
+    useEffect(() => {
+        if (metadataData) {
+            // @ts-ignore
+            setMetadata(metadataData);
+        }
+        if (linkData.linkData) {
+            // @ts-ignore
+            setSbtMetadata(linkData.linkData);
+        }
+    }, [metadataData,linkData]);
     return (
         <motion.div
             key="home"
@@ -190,16 +255,16 @@ function HomeSection({setActiveSection}: HomeSectionProps) {
             <FeatureGrid/>
 
             <Tabs.Root
-                defaultValue="og"
+                defaultValue="preview"
                 className="bg-white mb-12 text-gray-800 rounded-lg shadow-lg overflow-hidden"
                 onValueChange={setActiveTab}
             >
                 <Tabs.List className="flex border-b border-gray-200 bg-gray-50">
-                    <TabTrigger value="og" active={activeTab === 'og'}>
-                        OG Image Generator
+                    <TabTrigger value="preview" active={activeTab === 'preview'}>
+                        Preview
                     </TabTrigger>
-                    <TabTrigger value="nft" active={activeTab === 'nft'}>
-                        NFT Metadata
+                    <TabTrigger value="metadata" active={activeTab === 'metadata'}>
+                        SBT Metadata
                     </TabTrigger>
                 </Tabs.List>
                 <AnimatePresence mode="wait">
@@ -210,84 +275,67 @@ function HomeSection({setActiveSection}: HomeSectionProps) {
                         exit={{opacity: 0, y: -10}}
                         transition={{duration: 0.2}}
                     >
-                        <Tabs.Content value="og" className="p-4">
-                            <div className="flex items-center justify-center space-x-4">
-                                <div className="w-1/2">
-                                    <motion.h3
-                                        className="text-lg font-semibold mb-2"
-                                        initial={{opacity: 0, x: -20}}
-                                        animate={{opacity: 1, x: 0}}
-                                        transition={{delay: 0.1}}
-                                    >
-                                        Create Eye-Catching OG Images
-                                    </motion.h3>
-                                    <motion.p
-                                        initial={{opacity: 0, x: -20}}
-                                        animate={{opacity: 1, x: 0}}
-                                        transition={{delay: 0.2}}
-                                    >
-                                        Design and generate Open Graph images that make your NFTs stand out on social
-                                        media and marketplaces.
-                                    </motion.p>
-                                </div>
+                        <Tabs.Content value="preview" className="p-4">
+                            <div
+                                className="flex flex-col md:flex-row items-stretch space-y-4 md:space-y-0 md:space-x-4">
                                 <motion.div
-                                    className="w-1/2"
+                                    className="w-full md:w-1/2"
                                     initial={{opacity: 0, scale: 0.9}}
                                     animate={{opacity: 1, scale: 1}}
                                     transition={{delay: 0.3}}
                                 >
-                                    <div className="bg-gray-200 p-4 rounded-lg">
-                                        <div className="bg-white p-4 rounded shadow-inner">
-                                            <div
-                                                className="inline-flex h-16 w-16 select-none items-center justify-center overflow-hidden rounded-full align-middle bg-violet-100 text-violet-500 text-3xl font-medium">
-                                                NFT
-                                            </div>
-                                            <h4 className="text-lg font-bold mt-2">Amazing NFT Collection</h4>
-                                            <p className="text-sm text-gray-600">Discover unique digital assets</p>
+                                    <div className="bg-gray-100 p-2 rounded-lg shadow-inner h-[600px] overflow-hidden">
+                                        <iframe
+                                            src="https://52uzquxqktipwjlkcdmlvz249kqvpbrm9f27dcqpv81kqair46.walrus.site/#/dynamic?data=eyJscyI6W3sibCI6IndyYXBwZXIiLCJpIjoicGg6Z2xvYmUtZHVvdG9uZSIsInUiOiJodHRwczovL3dyYXBwZXIuc3BhY2UifSx7ImkiOiJwaDpnbG9iZS1kdW90b25lIiwibCI6Imxpbmtmb3JnZSIsInUiOiJodHRwczovL2xpbmtmb3JnZS53YWxydXMuc2l0ZSJ9LHsiaSI6InBoOmdsb2JlLWR1b3RvbmUiLCJsIjoic2VjcmV0bGluayIsInUiOiJodHRwczovL3NlY3JldGxpbmsud2FscnVzLnNpdGUifV0sIm4iOiJFdXJheGx1byIsImIiOiJpIGFtIHdvcmtpbmcgZm9yICBgV3JhcHBlciBQcm90b2NvbGAgYW5kIGBMaW5rZm9yZ2VgIiwidSI6Imh0dHBzOi8vYWdncmVnYXRvci1kZXZuZXQud2FscnVzLnNwYWNlL3YxL0tiNjRDYnRSTEtLR1h5dURwVUd6eUJFNnBTV2FwNjJHem1FNTZsMVg4NVUiLCJmIjoiIiwieCI6Imh0dHBzOi8veC5jb20vbHVvX2V1cmF4IiwiaWciOiIiLCJlIjoiZXVyYXhsdW9Ab3V0bG9vay5jb20iLCJnaCI6Imh0dHBzOi8vZ2l0aHViLmNvbS9ldXJheGx1byIsInRnIjoiaHR0cHM6Ly90Lm1lL2V1cmF4bHVvIiwidyI6IiIsInkiOiIiLCJsayI6IiIsIm0iOiIifQ=="
+                                            className="w-full h-full rounded-md shadow-sm"
+                                            title="Preview"
+                                        />
+                                    </div>
+                                </motion.div>
+                                <motion.div
+                                    className="w-full md:w-1/2"
+                                    initial={{opacity: 0, scale: 0.9}}
+                                    animate={{opacity: 1, scale: 1}}
+                                    transition={{delay: 0.3}}
+                                >
+                                    <div className="bg-gray-800 p-4 rounded-lg shadow-lg h-[600px] overflow-hidden">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <h3 className="text-white text-lg font-semibold">Metadata Preview</h3>
                                         </div>
+                                        <pre className="text-green-400 overflow-auto h-[calc(100%-2rem)]">
+                                            <code>{JSON.stringify(metadata, null, 2)}</code>
+                                          </pre>
                                     </div>
                                 </motion.div>
                             </div>
                         </Tabs.Content>
 
-                        <Tabs.Content value="nft" className="p-4">
-                            <div className="flex items-center justify-center space-x-4">
-                                <div className="w-1/2">
-                                    <motion.h3
-                                        className="text-lg font-semibold mb-2"
-                                        initial={{opacity: 0, x: -20}}
-                                        animate={{opacity: 1, x: 0}}
-                                        transition={{delay: 0.1}}
-                                    >
-                                        Streamline NFT Metadata Creation
-                                    </motion.h3>
-                                    <motion.p
-                                        initial={{opacity: 0, x: -20}}
-                                        animate={{opacity: 1, x: 0}}
-                                        transition={{delay: 0.2}}
-                                    >
-                                        Easily generate and manage metadata for your NFT collections, ensuring
-                                        compatibility with major marketplaces.
-                                    </motion.p>
-                                </div>
+                        <Tabs.Content value="metadata" className="p-4">
+                            <div className="flex flex-col space-y-4">
                                 <motion.div
-                                    className="w-1/2"
-                                    initial={{opacity: 0, scale: 0.9}}
-                                    animate={{opacity: 1, scale: 1}}
-                                    transition={{delay: 0.3}}
+                                    initial={{opacity: 0, y: 20}}
+                                    animate={{opacity: 1, y: 0}}
+                                    transition={{delay: 0.1}}
                                 >
-                <pre className="bg-gray-800 text-green-400 p-4 rounded-lg overflow-x-auto">
-                  {JSON.stringify({
-                      name: "Awesome NFT #1",
-                      description: "A unique digital asset",
-                      image: "https://example.com/nft1.png",
-                      attributes: [
-                          {trait_type: "Background", value: "Blue"},
-                          {trait_type: "Eyes", value: "Green"},
-                          {trait_type: "Mouth", value: "Smile"}
-                      ]
-                  }, null, 2)}
-                </pre>
+                                    <h3 className="text-lg font-semibold mb-2">Metadata Structure</h3>
+                                    <p className="text-gray-600">
+                                        This is the complete metadata structure for your SBT (Soul Bound Token). It
+                                        includes all the information about the token, including social links, profile
+                                        data, and external links.
+                                    </p>
+                                </motion.div>
+                                <motion.div
+                                    className="bg-gray-800 p-4 rounded-lg shadow-lg"
+                                    initial={{opacity: 0, scale: 0.95}}
+                                    animate={{opacity: 1, scale: 1}}
+                                    transition={{delay: 0.2}}
+                                >
+                                    <div className="flex items-center justify-between mb-2">
+                                        <h3 className="text-white text-lg font-semibold">Full Metadata</h3>
+                                    </div>
+                                    <pre className="text-green-400 overflow-auto max-h-[600px]">
+                                      <code>{JSON.stringify(sbtMetadata, null, 2)}</code>
+                                    </pre>
                                 </motion.div>
                             </div>
                         </Tabs.Content>
@@ -529,7 +577,7 @@ function MintSection() {
     // 判断新数据和原始数据是否一样
     const hasChanges = () => {
         console.log("hasChanges")
-        console.log("isEqual",isEqual(data, originalData))
+        console.log("isEqual", isEqual(data, originalData))
         console.log("originalData", originalData)
         console.log("data", data)
         return !isEqual(data, originalData);
@@ -688,23 +736,6 @@ function MintSection() {
             });
             console.log("forge move call set_template")
         }
-
-        // signAndExecuteTransaction(
-        //     {
-        //         transaction: txb,
-        //     },
-        //     {
-        //         onSuccess: (result) => {
-        //             console.log('Transaction successful', result);
-        //             alert(`Transaction successful. Digest: ${result.digest}`);
-        //             // Reset original data to reflect the new state
-        //         },
-        //         onError: (error) => {
-        //             console.error('Transaction failed', error);
-        //             alert(`Transaction failed: ${error.message}`);
-        //         },
-        //     },
-        // );
         signAndExecuteTransaction(
             {
                 transaction: txb,
@@ -798,16 +829,16 @@ function MintSection() {
                     <LinksForm data={data} updateData={updateData}/>
                 </div>
             </div>
-            {transactionHash?
+            {transactionHash ?
                 <TransactionVisualizer
                     isSigningTransaction={isSigningTransaction}
                     transactionHash={transactionHash}
-                    onClose={()=>{
+                    onClose={() => {
                         setTransactionHash('')
                     }}
-                />:<></>
+                /> : <></>
             }
-            <Preview data={data}/>
+            <Preview data={data} template={template}/>
         </div>
     );
 }
@@ -1459,20 +1490,20 @@ function ProfileForm({data, updateData}: { data: PreviewData, updateData: (data:
 }
 
 interface PreviewProps {
+    template: string;
     data: PreviewData;
 }
 
-function Preview({data}: PreviewProps) {
-    const socialIcons = generateSocialIcons(data);
-    const allSocialLinksAreEmpty = socialIcons.every(icon => !icon.link);
+export function Preview({data, template}: PreviewProps) {
+    const templateComponents = {
+        simple: SimpleTemplate,
+        dynamic: DynamicTemplate,
+    };
+
+    const SelectedTemplate = templateComponents[template as keyof typeof templateComponents];
 
     return (
-        <motion.div
-            className="h-screen grid place-items-center"
-            initial={{opacity: 0}}
-            animate={{opacity: 1}}
-            transition={{duration: 0.5}}
-        >
+        <div className="h-screen grid place-items-center relative">
             <motion.div
                 className="w-[150px] h-[512px] md:w-[340px] md:h-[729px] overflow-hidden rounded-[3rem] ring-8 ring-slate-800 bg-white shadow-xl"
                 initial={{scale: 0.9, y: 50}}
@@ -1480,122 +1511,11 @@ function Preview({data}: PreviewProps) {
                 transition={{type: "spring", stiffness: 260, damping: 20}}
             >
                 <div className="h-full overflow-y-auto">
-                    <main className="p-4 bg-white w-full space-y-8 pt-12 max-w-lg mx-auto min-h-full">
-                        <motion.div
-                            className="text-center"
-                            initial={{opacity: 0, y: 20}}
-                            animate={{opacity: 1, y: 0}}
-                            transition={{delay: 0.2, duration: 0.5}}
-                        >
-                            {data.u && (
-                                <motion.div
-                                    className="h-20 w-20 rounded-full overflow-hidden ring ring-slate-200 mx-auto"
-                                    whileHover={{scale: 1.1}}
-                                    whileTap={{scale: 0.9}}
-                                >
-                                    <img src={data.u} alt={data.n || 'Profile'}
-                                         className="h-full w-full object-cover"/>
-                                </motion.div>
-                            )}
-                            {data.n && (
-                                <motion.h1
-                                    className="text-2xl font-bold mt-4 text-slate-800"
-                                    initial={{opacity: 0}}
-                                    animate={{opacity: 1}}
-                                    transition={{delay: 0.4, duration: 0.5}}
-                                >
-                                    {data.n}
-                                </motion.h1>
-                            )}
-                            {data.b && (
-                                <motion.p
-                                    className="text-sm mt-2 text-slate-600"
-                                    initial={{opacity: 0}}
-                                    animate={{opacity: 1}}
-                                    transition={{delay: 0.6, duration: 0.5}}
-                                >
-                                    {data.b}
-                                </motion.p>
-                            )}
-                        </motion.div>
-                        {!allSocialLinksAreEmpty && (
-                            <motion.div
-                                className="flex items-center justify-center flex-wrap"
-                                initial={{opacity: 0, y: 20}}
-                                animate={{opacity: 1, y: 0}}
-                                transition={{delay: 0.8, duration: 0.5}}
-                            >
-                                <AnimatePresence>
-                                    {socialIcons.map(({key, icon, link}, index) =>
-                                            link && (
-                                                <motion.a
-                                                    key={key}
-                                                    href={link}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="p-1"
-                                                    initial={{opacity: 0, scale: 0}}
-                                                    animate={{opacity: 1, scale: 1}}
-                                                    exit={{opacity: 0, scale: 0}}
-                                                    transition={{delay: index * 0.1, duration: 0.3}}
-                                                    whileHover={{scale: 1.2}}
-                                                    whileTap={{scale: 0.8}}
-                                                >
-                                                    <Icon
-                                                        icon={icon}
-                                                        width={24}
-                                                        height={24}
-                                                        className="text-slate-600 hover:text-slate-800 transition-colors"
-                                                    />
-                                                </motion.a>
-                                            )
-                                    )}
-                                </AnimatePresence>
-                            </motion.div>
-                        )}
-                        <motion.ul
-                            className="space-y-2"
-                            initial={{opacity: 0}}
-                            animate={{opacity: 1}}
-                            transition={{delay: 1, duration: 0.5}}
-                        >
-                            <AnimatePresence>
-                                {data.ls && data.ls.map((link, index) => (
-                                    <motion.li
-                                        key={index}
-                                        initial={{opacity: 0, x: -50}}
-                                        animate={{opacity: 1, x: 0}}
-                                        exit={{opacity: 0, x: 50}}
-                                        transition={{delay: index * 0.1, duration: 0.3}}
-                                    >
-                                        <motion.a
-                                            href={link.u}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="flex items-center space-x-2 p-3 rounded-xl hover:bg-slate-100 bg-slate-50 transition-colors"
-                                            whileHover={{scale: 1.05, backgroundColor: "#f1f5f9"}}
-                                            whileTap={{scale: 0.95}}
-                                        >
-                                            <div
-                                                className="flex-shrink-0 flex h-10 w-10 items-center justify-center rounded-lg text-slate-500">
-                                                {link.i && link.i.startsWith('http') ? (
-                                                    <img src={link.i} alt={link.l} className="h-6 w-6"/>
-                                                ) : (
-                                                    <Icon icon={link.i || 'mdi:link'} width={24} height={24}/>
-                                                )}
-                                            </div>
-                                            <div className="w-full flex-grow min-w-0">
-                                                <p className="font-medium text-sm leading-6 text-gray-900">{link.l}</p>
-                                            </div>
-                                        </motion.a>
-                                    </motion.li>
-                                ))}
-                            </AnimatePresence>
-                        </motion.ul>
-                    </main>
+                    <AnimatePresence mode="wait">
+                        <SelectedTemplate data={data}/>;
+                    </AnimatePresence>
                 </div>
             </motion.div>
-        </motion.div>
+        </div>
     );
 }
-
