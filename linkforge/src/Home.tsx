@@ -433,6 +433,7 @@ export default function LinkForge() {
 }
 
 function MintSection() {
+
     const [data, setData] = useState<PreviewData>({
         n: "",
         b: "",
