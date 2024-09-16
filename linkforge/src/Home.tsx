@@ -123,7 +123,7 @@ const features = [
 ]
 const FeatureGrid: React.FC = () => {
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             {features.map((feature, index) => (
                 <div
                     key={index}
@@ -154,15 +154,12 @@ const TabTrigger: React.FC<TableActionProps> = ({value, active, children}: Table
         <Tabs.Trigger
             value={value}
             className={`
-        flex-1 px-4 py-2 text-center transition-all duration-200
-        focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-opacity-50
-        ${active
+                flex-1 px-4 py-2 text-center transition-all duration-200
+                focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-opacity-50
+                ${active
                 ? 'bg-white text-blue-600 font-semibold border-b-2 border-blue-600'
-                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-            }
-        ${value === 'og' ? 'rounded-tl-lg' : 'rounded-tr-lg'}
-      `}
-        >
+                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`
+            }>
             {children}
         </Tabs.Trigger>
     )
@@ -236,7 +233,16 @@ function HomeSection({setActiveSection}: HomeSectionProps) {
             // @ts-ignore
             setSbtMetadata(linkData.linkData);
         }
-    }, [metadataData,linkData]);
+    }, [metadataData, linkData]);
+
+    // iframe 引用
+    const iframeRef = useRef(null)
+    useEffect(() => {
+        // 当组件挂载时，立即加载 iframe
+        if (iframeRef.current) {
+            iframeRef.current.src = `https://secretlink.walrus.site/#/SpxDM37bkaF_fR8dDkPCHl4hGusvsDQBIzCu2myCn9w?mimetype=video/mp4`
+        }
+    }, [])
     return (
         <motion.div
             key="home"
@@ -248,101 +254,117 @@ function HomeSection({setActiveSection}: HomeSectionProps) {
             <h1 className="text-5xl font-bold text-center mb-8">
                 Forge Powerful Links as SBT
             </h1>
-            <p className="text-xl text-center mb-12">
+            <p className="text-xl text-center mb-8">
                 Create stunning link-themed SBT with Walrus-Site and Onchain-Metadata for your with ease
             </p>
 
             <FeatureGrid/>
 
             <Tabs.Root
-                defaultValue="preview"
-                className="bg-white mb-12 text-gray-800 rounded-lg shadow-lg overflow-hidden"
+                defaultValue="video"
+                className="bg-white mb-4 text-gray-800 rounded-lg shadow-lg overflow-hidden"
                 onValueChange={setActiveTab}
             >
                 <Tabs.List className="flex border-b border-gray-200 bg-gray-50">
+                    <TabTrigger value="video" active={activeTab === 'video'}>
+                        Video
+                    </TabTrigger>
                     <TabTrigger value="preview" active={activeTab === 'preview'}>
                         Preview
                     </TabTrigger>
                     <TabTrigger value="metadata" active={activeTab === 'metadata'}>
-                        SBT Metadata
+                        Metadata
                     </TabTrigger>
                 </Tabs.List>
-                <AnimatePresence mode="wait">
-                    <motion.div
-                        key={activeTab}
-                        initial={{opacity: 0, y: 10}}
-                        animate={{opacity: 1, y: 0}}
-                        exit={{opacity: 0, y: -10}}
-                        transition={{duration: 0.2}}
-                    >
-                        <Tabs.Content value="preview" className="p-4">
-                            <div
-                                className="flex flex-col md:flex-row items-stretch space-y-4 md:space-y-0 md:space-x-4">
-                                <motion.div
-                                    className="w-full md:w-1/2"
-                                    initial={{opacity: 0, scale: 0.9}}
-                                    animate={{opacity: 1, scale: 1}}
-                                    transition={{delay: 0.3}}
-                                >
-                                    <div className="bg-gray-100 p-2 rounded-lg shadow-inner h-[600px] overflow-hidden">
-                                        <iframe
-                                            src={`${sbtMetadata.display.link}`}
-                                            className="w-full h-full rounded-md shadow-sm"
-                                            title="Preview"
-                                        />
-                                    </div>
-                                </motion.div>
-                                <motion.div
-                                    className="w-full md:w-1/2"
-                                    initial={{opacity: 0, scale: 0.9}}
-                                    animate={{opacity: 1, scale: 1}}
-                                    transition={{delay: 0.3}}
-                                >
-                                    <div className="bg-gray-800 p-4 rounded-lg shadow-lg h-[600px] overflow-hidden">
-                                        <div className="flex items-center justify-between mb-2">
-                                            <h3 className="text-white text-lg font-semibold">Metadata Preview</h3>
+                <div className="relative">
+                    <Tabs.Content value="preview" asChild forceMount>
+                        <div className={`p-4 ${activeTab !== 'preview' ? 'hidden' : ''}`}>
+                            <AnimatePresence>
+                                {activeTab === 'preview' && (
+                                    <motion.div
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        transition={{ duration: 0.2 }}
+                                    >
+                                        <div className="flex flex-col md:flex-row items-stretch space-y-4 md:space-y-0 md:space-x-4">
+                                            <div className="w-full md:w-1/2">
+                                                <div className="bg-gray-100 p-2 rounded-lg shadow-inner h-[600px] overflow-hidden">
+                                                    <iframe
+                                                        src={`${sbtMetadata.display.link}`}
+                                                        className="w-full h-full rounded-md shadow-sm"
+                                                        title="Preview"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="w-full md:w-1/2">
+                                                <div className="bg-gray-800 p-4 rounded-lg shadow-lg h-[600px] overflow-hidden">
+                                                    <div className="flex items-center justify-between mb-2">
+                                                        <h3 className="text-white text-lg font-semibold">Metadata Preview</h3>
+                                                    </div>
+                                                    <pre className="text-green-400 overflow-auto h-[calc(100%-2rem)]">
+                                                      <code>{JSON.stringify(metadata, null, 2)}</code>
+                                                    </pre>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <pre className="text-green-400 overflow-auto h-[calc(100%-2rem)]">
-                                            <code>{JSON.stringify(metadata, null, 2)}</code>
-                                          </pre>
-                                    </div>
-                                </motion.div>
-                            </div>
-                        </Tabs.Content>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+                    </Tabs.Content>
 
-                        <Tabs.Content value="metadata" className="p-4">
-                            <div className="flex flex-col space-y-4">
-                                <motion.div
-                                    initial={{opacity: 0, y: 20}}
-                                    animate={{opacity: 1, y: 0}}
-                                    transition={{delay: 0.1}}
-                                >
-                                    <h3 className="text-lg font-semibold mb-2">Metadata Structure</h3>
-                                    <p className="text-gray-600">
-                                        This is the complete metadata structure for your SBT (Soul Bound Token). It
-                                        includes all the information about the token, including social links, profile
-                                        data, and external links.
-                                    </p>
-                                </motion.div>
-                                <motion.div
-                                    className="bg-gray-800 p-4 rounded-lg shadow-lg"
-                                    initial={{opacity: 0, scale: 0.95}}
-                                    animate={{opacity: 1, scale: 1}}
-                                    transition={{delay: 0.2}}
-                                >
-                                    <div className="flex items-center justify-between mb-2">
-                                        <h3 className="text-white text-lg font-semibold">Full Metadata</h3>
-                                    </div>
-                                    <pre className="text-green-400 overflow-auto max-h-[600px]">
-                                      <code>{JSON.stringify(sbtMetadata, null, 2)}</code>
-                                    </pre>
-                                </motion.div>
+                    <Tabs.Content value="metadata" asChild forceMount>
+                        <div className={`p-4 ${activeTab !== 'metadata' ? 'hidden' : ''}`}>
+                            <AnimatePresence>
+                                {activeTab === 'metadata' && (
+                                    <motion.div
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        transition={{ duration: 0.2 }}
+                                    >
+                                        <div className="flex flex-col space-y-4">
+                                            <div>
+                                                <h3 className="text-lg font-semibold mb-2">Metadata Structure</h3>
+                                                <p className="text-gray-600">
+                                                    This is the complete metadata structure for your SBT (Soul Bound Token). It
+                                                    includes all the information about the token, including social links, profile
+                                                    data, and external links.
+                                                </p>
+                                            </div>
+                                            <div className="bg-gray-800 p-4 rounded-lg shadow-lg">
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <h3 className="text-white text-lg font-semibold">Full Metadata</h3>
+                                                </div>
+                                                <pre className="text-green-400 overflow-auto max-h-[600px]">
+                                                    <code>{JSON.stringify(sbtMetadata, null, 2)}</code>
+                                                </pre>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+                    </Tabs.Content>
+
+                    <Tabs.Content value="video" asChild forceMount>
+                        <div className={`p-4 ${activeTab !== 'video' ? 'hidden' : ''}`}>
+                            <div className="max-w-4xl mx-auto">
+                                <div className="relative" style={{ paddingTop: '56.25%' }}>
+                                    <iframe
+                                        ref={iframeRef}
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                        className="absolute inset-0 w-full h-full"
+                                        aria-hidden={activeTab !== 'video'}
+                                    />
+                                </div>
                             </div>
-                        </Tabs.Content>
-                    </motion.div>
-                </AnimatePresence>
+                        </div>
+                    </Tabs.Content>
+                </div>
             </Tabs.Root>
-
             <div
                 className="text-center transform transition-all duration-200 ease-in-out hover:scale-105 active:scale-95">
                 <button
@@ -355,14 +377,6 @@ function HomeSection({setActiveSection}: HomeSectionProps) {
                     Start Minting Now
                     <ArrowRight className="ml-2"/>
                 </button>
-            </div>
-
-            <div className="mt-4 aspect-w-16 aspect-h-9">
-                <iframe
-                    src={`https://secretlink.walrus.site/#/SpxDM37bkaF_fR8dDkPCHl4hGusvsDQBIzCu2myCn9w?mimetype=video/mp4`}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                ></iframe>
             </div>
         </motion.div>
     )
@@ -525,8 +539,6 @@ function MintSection() {
     const linkforgePackageId = useNetworkVariable("linkforgePackageId");
     const linkforgeStoreObjectId = useNetworkVariable("linkforgeStoreObjectId");
 
-    const [quantity, setQuantity] = useState(2); // number of red packets
-
     const [amount, setAmount] = useState(1); // number of coin
     const [coinDecimals, setCoinDecimals] = useState(9);
     const [isSigningTransaction, setIsSigningTransaction] = useState(false);
@@ -665,11 +677,13 @@ function MintSection() {
         txb.setGasBudget(1_000_000_000);
         txb.setSender(currentAccount.address);
 
+        // const ALLOWED_LABEL_CHARS: vector<u8> = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-";
+
         if (!originalData) {
             // New link creation
             txb.moveCall({
                 arguments: [
-                    txb.pure.string(customId || data.n),
+                    txb.pure.string(customId || currentAccount.address),
                     txb.pure.string(data.n),
                     txb.pure.string(data.u),
                     txb.pure.string(encodeData(data)),
@@ -991,7 +1005,7 @@ const EnhancedUploadButton = ({onClick, uploading}: { onClick: () => void; uploa
             <div
                 className="relative z-10 flex items-center justify-center w-full h-full text-white font-semibold text-lg">
                 {uploading ? (
-                    <LoaderPinwheel className="w-6 h-6 animate-spin"/>
+                    <LoaderPinwheel className="w-6 h-6 cursor-progress animate-spin"/>
                 ) : (
                     <CircleFadingArrowUp className="w-6 h-6"/>
                 )}
@@ -1469,7 +1483,7 @@ function ProfileForm({data, updateData}: { data: PreviewData, updateData: (data:
                         onCropComplete={onCropComplete}
                     />
                 ) : (
-                    <div className="flex items-center justify-center h-full">
+                    <div className="flex cursor-pointer items-center justify-center h-full">
                         <p className="text-gray-500">
                             Drag and drop an image here, or double click to select a file
                         </p>
@@ -1483,7 +1497,7 @@ function ProfileForm({data, updateData}: { data: PreviewData, updateData: (data:
                         if (file) handleFileUpload(file);
                     }}
                     accept="image/*"
-                    className="hidden"
+                    className="hidden  cursor-pointer"
                 />
             </div>
             {image && (
