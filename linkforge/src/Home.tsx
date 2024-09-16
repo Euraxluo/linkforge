@@ -117,8 +117,8 @@ const features = [
     },
     {
         icon: Shell,
-        title: "Metadata as Dynamic OG",
-        description: "Generate beautiful OG images based on metadata to display your SBT, build on Sui of full-chain."
+        title: "Metadata link to Walrus Site",
+        description: "Generate beautiful Walrus Site(future will support OG images) based on metadata to display your SBT, build on Sui of full-chain."
     }
 ]
 const FeatureGrid: React.FC = () => {
@@ -249,7 +249,7 @@ function HomeSection({setActiveSection}: HomeSectionProps) {
                 Forge Powerful Links as SBT
             </h1>
             <p className="text-xl text-center mb-12">
-                Create stunning link-themed SBT with OG images and metadata for your with ease
+                Create stunning link-themed SBT with Walrus-Site and Onchain-Metadata for your with ease
             </p>
 
             <FeatureGrid/>
@@ -286,7 +286,7 @@ function HomeSection({setActiveSection}: HomeSectionProps) {
                                 >
                                     <div className="bg-gray-100 p-2 rounded-lg shadow-inner h-[600px] overflow-hidden">
                                         <iframe
-                                            src="https://52uzquxqktipwjlkcdmlvz249kqvpbrm9f27dcqpv81kqair46.walrus.site/#/dynamic?data=eyJscyI6W3sibCI6IndyYXBwZXIiLCJpIjoicGg6Z2xvYmUtZHVvdG9uZSIsInUiOiJodHRwczovL3dyYXBwZXIuc3BhY2UifSx7ImkiOiJwaDpnbG9iZS1kdW90b25lIiwibCI6Imxpbmtmb3JnZSIsInUiOiJodHRwczovL2xpbmtmb3JnZS53YWxydXMuc2l0ZSJ9LHsiaSI6InBoOmdsb2JlLWR1b3RvbmUiLCJsIjoic2VjcmV0bGluayIsInUiOiJodHRwczovL3NlY3JldGxpbmsud2FscnVzLnNpdGUifV0sIm4iOiJFdXJheGx1byIsImIiOiJpIGFtIHdvcmtpbmcgZm9yICBgV3JhcHBlciBQcm90b2NvbGAgYW5kIGBMaW5rZm9yZ2VgIiwidSI6Imh0dHBzOi8vYWdncmVnYXRvci1kZXZuZXQud2FscnVzLnNwYWNlL3YxL0tiNjRDYnRSTEtLR1h5dURwVUd6eUJFNnBTV2FwNjJHem1FNTZsMVg4NVUiLCJmIjoiIiwieCI6Imh0dHBzOi8veC5jb20vbHVvX2V1cmF4IiwiaWciOiIiLCJlIjoiZXVyYXhsdW9Ab3V0bG9vay5jb20iLCJnaCI6Imh0dHBzOi8vZ2l0aHViLmNvbS9ldXJheGx1byIsInRnIjoiaHR0cHM6Ly90Lm1lL2V1cmF4bHVvIiwidyI6IiIsInkiOiIiLCJsayI6IiIsIm0iOiIifQ=="
+                                            src={`${sbtMetadata.display.link}`}
                                             className="w-full h-full rounded-md shadow-sm"
                                             title="Preview"
                                         />
@@ -357,6 +357,13 @@ function HomeSection({setActiveSection}: HomeSectionProps) {
                 </button>
             </div>
 
+            <div className="mt-4 aspect-w-16 aspect-h-9">
+                <iframe
+                    src={`https://secretlink.walrus.site/#/SpxDM37bkaF_fR8dDkPCHl4hGusvsDQBIzCu2myCn9w?mimetype=video/mp4`}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                ></iframe>
+            </div>
         </motion.div>
     )
 }

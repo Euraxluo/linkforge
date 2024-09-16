@@ -1,4 +1,14 @@
-# LinkForge: Forging Powerful Links as SBTs on SuiLinkForge：在 Sui 上打造强大的 SBT 链接
+# LinkForge
+
+#### site: https://linkforge.walrus.site
+#### Walrus Site object ID: 0xcbcc89cdac50edc243eb077f0262f5e3bd78e0cd684342b9e6a202605f01cbc6
+#### Walrus Site Browse the resulting site at: https://52uzquxqktipwjlkcdmlvz249kqvpbrm9f27dcqpv81kqair46.walrus.site
+#### video on walrus blob id: `SpxDM37bkaF_fR8dDkPCHl4hGusvsDQBIzCu2myCn9w`
+#### video you can view use link: https://secretlink.walrus.site/#/SpxDM37bkaF_fR8dDkPCHl4hGusvsDQBIzCu2myCn9w
+
+### we build a way to view blob:
+
+# LinkForge: Forging Powerful Links as SBTs on SuiLinkForge
 
 LinkForge is an innovative project built on the Sui blockchain that allows users to create unique, 
 customizable link-in-bio style pages as Soulbound Tokens (SBTs). 
@@ -30,13 +40,13 @@ Our vision for LinkForge is to create a decentralized ecosystem where users can:
 
 LinkForge is built using a combination of smart contracts on the Sui blockchain and a modern web frontend:LinkForge 是使用 Sui 区块链上的智能合约和现代 Web 前端的组合构建的：
 
-### Smart Contracts 智能合约
+### Smart Contracts
 
 - Implemented in Move, Sui's native programming language
 - Key modules:
 
-- `linkforge::link`: Manages the creation, updating, and destruction of Link SBTs`linkforge::link` ：管理 Link SBT 的创建、更新和销毁
-- `linkforge::vault`: Handles asset storage and management within Link SBTs`linkforge::vault` ：处理 Link SBT 内的资产存储和管理
+- `linkforge::link`: Manages the creation, updating, and destruction of Link SBTs
+- `linkforge::vault`: Handles asset storage and management within Link SBTs
 
 
 ### Frontend
