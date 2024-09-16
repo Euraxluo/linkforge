@@ -1,4 +1,5 @@
-import {encode, decode} from "js-base64";
+import {decode, encode} from "js-base64";
+
 export const encodeData = (obj) => {
     return encode(JSON.stringify(obj));
 };
@@ -63,3 +64,38 @@ export function areAllSocialLinksEmpty(socialIcons: { key: string; link: string 
         return !icon.link;
     });
 }
+
+export function extractDataFromURL(link: string): {
+    template: string;
+    data: PreviewData;
+} {
+    // Step 1: Extract the template
+    const templateMatch = link.match(/#\/([^?]+)/);
+    const template = templateMatch ? templateMatch[1] : 'default';
+
+    // Step 2: Extract the data parameter
+    const dataParam = link.split('data=')[1];
+    if (!dataParam) {
+        throw new Error('No data parameter found in the URL');
+    }
+
+    // Step 3: Decode the base64-encoded string
+    let decodedData: string;
+    try {
+        decodedData = atob(dataParam);
+    } catch (error) {
+        throw new Error('Failed to decode base64 data');
+    }
+
+    // Step 4: Parse the JSON
+    try {
+        const parsedData: PreviewData = JSON.parse(decodedData);
+        return {
+            template,
+            data: parsedData
+        };
+    } catch (error) {
+        throw new Error('Failed to parse JSON data');
+    }
+}
+

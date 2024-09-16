@@ -17,13 +17,15 @@ import {
 import {Icon} from '@iconify-icon/react';
 import Cropper from 'react-easy-crop'
 import {Point, Area} from 'react-easy-crop/types'
-import {encodeData, generateSocialIcons, Link, PreviewData} from "./utils";
+import {encodeData, extractDataFromURL, generateSocialIcons, Link, PreviewData} from "./utils";
 import {WalrusClient} from 'tuskscript'
 import {useNetworkVariable} from "./networkConfig";
 import {useCurrentAccount, useSuiClient, useSignAndExecuteTransaction, useCurrentWallet} from "@mysten/dapp-kit";
 import {Transaction} from "@mysten/sui/transactions";
 import {useLinkData} from "./link/useLinkData";
-import {ConnectButton, Connector, MenuItemType} from "@ant-design/web3";
+import {ConnectButton, Connector} from "@ant-design/web3";
+import {isEqual} from 'lodash';
+import {TransactionVisualizer} from "./TransactionVisualizer";
 
 interface SeaCreature {
     id: number
@@ -433,7 +435,6 @@ export default function LinkForge() {
 }
 
 function MintSection() {
-
     const [data, setData] = useState<PreviewData>({
         n: "",
         b: "",
@@ -450,9 +451,93 @@ function MintSection() {
         lk: "",
         m: "",
     });
+    // 原来的数据
+    const [originalData, setOriginalData] = useState<PreviewData | null>(null);
+    const [originalTemplate, setOriginalTemplate] = useState<string | null>(null);
+    const [originalIdentify, setOriginalIdentify] = useState<string | null>(null);
+    // 模板
+    const [template, setTemplate] = useState('simple');
+    // 用户id?
+    const [customId, setCustomId] = useState('');
 
-    const updateData = (newData) => {
-        setData({...data, ...newData});
+    // 链接数据hook
+    const linkData = useLinkData();
+    // 用于查询数据
+    const client = useSuiClient();
+    // 当前链接账号
+    const currentAccount = useCurrentAccount();
+    // 合约常量
+    const linkforgePackageId = useNetworkVariable("linkforgePackageId");
+    const linkforgeStoreObjectId = useNetworkVariable("linkforgeStoreObjectId");
+
+    const [quantity, setQuantity] = useState(2); // number of red packets
+
+    const [amount, setAmount] = useState(1); // number of coin
+    const [coinDecimals, setCoinDecimals] = useState(9);
+    const [isSigningTransaction, setIsSigningTransaction] = useState(false);
+    const [transactionHash, setTransactionHash] = useState(null);
+
+    const {mutate: signAndExecuteTransaction} = useSignAndExecuteTransaction({
+        execute: async ({bytes, signature}) =>
+            await client.executeTransactionBlock({
+                transactionBlock: bytes,
+                signature,
+                options: {
+                    showRawEffects: true,
+                    showObjectChanges: true,
+                },
+            }),
+    });
+
+    /**
+     * 从当前用户的链接数据中获取link信息
+     */
+    const {template: extractedTemplate, data: extractedData} = useMemo(() => {
+        if (linkData.linkData?.display?.link) {
+            return extractDataFromURL(linkData.linkData.display.link);
+        }
+        return {template: "", data: null};
+    }, [linkData.linkData?.display?.link]);
+    useEffect(() => {
+        if (extractedData && !isEqual(extractedData, data)) {
+            setData(extractedData);
+            setOriginalData(JSON.parse(JSON.stringify(extractedData)));
+        }
+    }, [extractedData]);
+    useEffect(() => {
+        if (extractedTemplate && !isEqual(extractedTemplate, template)) {
+            setTemplate(extractedTemplate);
+            setOriginalTemplate(extractedTemplate);
+        }
+    }, [extractedTemplate]);
+    /**
+     * 从当前用户的链接数据中获取id
+     */
+    const extractedIdentify = useMemo(() => {
+        if (linkData.linkData?.display?.identify) {
+            return linkData.linkData?.display?.identify;
+        }
+        return null;
+    }, [linkData.linkData?.display?.identify]);
+    useEffect(() => {
+        if (extractedIdentify && !isEqual(customId, extractedIdentify)) {
+            setCustomId(extractedIdentify);
+            setOriginalIdentify(extractedIdentify);
+        }
+    }, [extractedIdentify]);
+
+    // 判断新数据和原始数据是否一样
+    const hasChanges = () => {
+        console.log("hasChanges")
+        console.log("isEqual",isEqual(data, originalData))
+        console.log("originalData", originalData)
+        console.log("data", data)
+        return !isEqual(data, originalData);
+    };
+    // 获取具有变化的fields
+    const getChangedFields = () => {
+        if (!originalData) return Object.keys(data);
+        return Object.keys(data).filter(key => !isEqual(data[key], originalData[key]));
     };
 
     const prefillDemoData = () => {
@@ -503,7 +588,7 @@ function MintSection() {
     };
 
     const preview = () => {
-        const url = `${window.location.origin}/#/dynamic?data=${encodeData(data)}`;
+        const url = `${window.location.origin}/#/${template}?data=${encodeData(data)}`;
         // 检查是否支持 window.open
         if (window.open) {
             window.open(url, '_blank').focus();
@@ -514,63 +599,134 @@ function MintSection() {
         }
     };
 
-
-    const [quantity, setQuantity] = useState(2); // number of red packets
-
-    const [amount, setAmount] = useState(1); // number of coin
-    const [coinType, setCoinType] = useState("0x2::sui::SUI");
-    const [coinDecimals, setCoinDecimals] = useState(9);
-
-    const client = useSuiClient();
-    const currentAccount = useCurrentAccount();
-
-    const linkforgePackageId = useNetworkVariable("linkforgePackageId");
-    const linkforgeStoreObjectId = useNetworkVariable("linkforgeStoreObjectId");
-    const {mutate: signAndExecuteTransaction} = useSignAndExecuteTransaction({
-        execute: async ({bytes, signature}) =>
-            await client.executeTransactionBlock({
-                transactionBlock: bytes,
-                signature,
-                options: {
-                    showRawEffects: true,
-                    showObjectChanges: true,
-                },
-            }),
-    });
-
-
-    const forge = () => {
+    const forge = async () => {
+        setIsSigningTransaction(true);
         if (!currentAccount) {
             alert("Please connect your wallet first.");
             return;
         }
-        // 铸造,判断钱包是否正确链接,链接是否正确,是否有足够的余额
+
         const txb = new Transaction();
-        txb.setGasBudget(1_000_000_000)
-        txb.setSender(currentAccount?.address as string);
-        // const [given_coin] = txb.splitCoins(txb.gas, [10 ** coinDecimals * amount]);
-        txb.moveCall({
-            arguments: [
-                txb.pure.string(data.n),
-                txb.pure.string(data.n),
-                txb.pure.string(data.u),
-                txb.pure.string(encodeData(data)),
-                txb.object(linkforgeStoreObjectId),
-            ],
-            target: `${linkforgePackageId}::link::new`,
-        });
+        txb.setGasBudget(1_000_000_000);
+        txb.setSender(currentAccount.address);
+
+        if (!originalData) {
+            // New link creation
+            txb.moveCall({
+                arguments: [
+                    txb.pure.string(customId || data.n),
+                    txb.pure.string(data.n),
+                    txb.pure.string(data.u),
+                    txb.pure.string(encodeData(data)),
+                    txb.object(linkforgeStoreObjectId),
+                ],
+                target: `${linkforgePackageId}::link::new`,
+            });
+            console.log("forge move call new")
+        } else {
+            // Updating existing link
+            const changedFields = getChangedFields();
+
+            if (changedFields.length > 0) {
+                txb.moveCall({
+                    arguments: [
+                        txb.object(linkData.linkData.objectId),
+                        txb.pure.string(encodeData(data)),
+                    ],
+                    target: `${linkforgePackageId}::link::set_content`,
+                });
+                console.log("forge move call set_content")
+            }
+
+            if (changedFields.includes('n')) {
+                txb.moveCall({
+                    arguments: [
+                        txb.object(linkData.linkData.objectId),
+                        txb.pure.string(data.n),
+                    ],
+                    target: `${linkforgePackageId}::link::set_name`,
+                });
+                console.log("forge move call set_name")
+            }
+
+            if (changedFields.includes('u')) {
+                txb.moveCall({
+                    arguments: [
+                        txb.object(linkData.linkData.objectId),
+                        txb.pure.string(data.u),
+                    ],
+                    target: `${linkforgePackageId}::link::set_image_url`,
+                });
+                console.log("forge move call set_image_url")
+            }
+
+            if (template !== originalTemplate) {
+                const [given_coin] = txb.splitCoins(txb.gas, [1 ** coinDecimals * amount]);
+                txb.moveCall({
+                    arguments: [
+                        txb.object(linkData.linkData.objectId),
+                        txb.pure.string(template),
+                        txb.object(linkforgeStoreObjectId),
+                        txb.object(given_coin),
+                    ],
+                    target: `${linkforgePackageId}::link::set_template`,
+                });
+                console.log("forge move call set_template")
+            }
+        }
+
+        if (customId && customId !== originalIdentify) {
+            const [given_coin] = txb.splitCoins(txb.gas, [1 ** coinDecimals * amount]);
+            txb.moveCall({
+                arguments: [
+                    txb.object(linkData.linkData.objectId),
+                    txb.object(linkforgeStoreObjectId),
+                    txb.pure.string(customId),
+                    txb.object(given_coin),
+                ],
+                target: `${linkforgePackageId}::link::set_identify`,
+            });
+            console.log("forge move call set_template")
+        }
+
+        // signAndExecuteTransaction(
+        //     {
+        //         transaction: txb,
+        //     },
+        //     {
+        //         onSuccess: (result) => {
+        //             console.log('Transaction successful', result);
+        //             alert(`Transaction successful. Digest: ${result.digest}`);
+        //             // Reset original data to reflect the new state
+        //         },
+        //         onError: (error) => {
+        //             console.error('Transaction failed', error);
+        //             alert(`Transaction failed: ${error.message}`);
+        //         },
+        //     },
+        // );
         signAndExecuteTransaction(
             {
                 transaction: txb,
             },
             {
                 onSuccess: (result) => {
-                    console.log('object changes', result.objectChanges);
-                    alert(result.digest);
+                    console.log('Transaction successful', result);
+                    setTransactionHash(result.digest);
+                    setIsSigningTransaction(false);
+                },
+                onError: (error) => {
+                    console.error('Transaction failed', error);
+                    alert(`Transaction failed: ${error.message}`);
+                    setIsSigningTransaction(false);
                 },
             },
         );
     };
+    const updateData = (newData) => {
+        setData(prevData => ({...prevData, ...newData}));
+    };
+
     return (
         <div className="h-screen grid grid-cols-12 md:grid-cols-3 divide-x">
             <div className="col-span-8 md:col-span-2 h-screen flex flex-col bg-slate-100">
@@ -590,15 +746,43 @@ function MintSection() {
                         <Icon icon="ph:paper-plane-tilt-bold" width={18} height={18}/>
                     </button>
                     <div className="flex-1"></div>
+                    {/*forge 按钮*/}
                     <button
                         onClick={forge}
-                        className="h-12 flex items-center space-x-2 px-4 border-r text-xs font-medium bg-white text-slate-700"
+                        disabled={!hasChanges() && !customId}
+                        className="h-12 flex items-center space-x-2 px-4 border-r text-xs font-medium bg-white text-slate-700 disabled:opacity-50"
                     >
-                        <span className="hidden md:block">Forge</span>
-                        <Icon icon="icon-park:gavel" width={24} height={24}></Icon>
+                        <span className="hidden md:block">
+                          {originalData ? 'Update' : 'Forge'}
+                        </span>
+                        <Icon icon="icon-park:gavel" width={24} height={24}/>
                     </button>
                 </div>
-                <div className="flex-1 overflow-y-auto p-8">
+                <div className="flex-1 overflow-y-auto px-8 pt-2 mb-4">
+                    <div className="sm:overflow-hidden sm:rounded-md shadow-sm">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-1 bg-white px-2 py-2 sm:p-2">
+                            <input
+                                type="text"
+                                value={customId}
+                                onChange={(e) => setCustomId(e.target.value)}
+                                placeholder="Custom ID"
+                                className="w-full px-3 py-2 pr-8 text-black text-xs font-light border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                            <select
+                                value={template}
+                                onChange={(e) => setTemplate(e.target.value)}
+                                className="w-full px-3 py-2 pr-8 text-black text-xs font-light border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="simple">Simple</option>
+                                <option value="dynamic">Dynamic</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div className="py-1 sm:py-1" aria-hidden="true">
+                        <div className="hidden sm:block sm:py-1">
+                            <div className="border-t border-gray-200"></div>
+                        </div>
+                    </div>
                     <ProfileForm data={data} updateData={updateData}/>
                     <div className="py-2 sm:py-5" aria-hidden="true">
                         <div className="hidden sm:block sm:py-5">
@@ -614,6 +798,15 @@ function MintSection() {
                     <LinksForm data={data} updateData={updateData}/>
                 </div>
             </div>
+            {transactionHash?
+                <TransactionVisualizer
+                    isSigningTransaction={isSigningTransaction}
+                    transactionHash={transactionHash}
+                    onClose={()=>{
+                        setTransactionHash('')
+                    }}
+                />:<></>
+            }
             <Preview data={data}/>
         </div>
     );
@@ -833,6 +1026,12 @@ function LinksForm({data, updateData}) {
                         <div {...provided.droppableProps}
                              ref={provided.innerRef}
                         >
+                            <div className="mt-1 text-xs text-gray-600">
+                                icon keys can be found in <br/>
+                                <a className="underline" href="https://icon-sets.iconify.design/">
+                                    https://icon-sets.iconify.design/
+                                </a>
+                            </div>
                             {data.ls.map((link, index) => (
                                 <Draggable key={`link-${index}`} draggableId={`link-${index}`} index={index}>
                                     {(provided) => (
@@ -859,7 +1058,7 @@ function LinksForm({data, updateData}) {
                                                         <div>
                                                             <label className="block text-sm font-medium text-gray-700"
                                                                    htmlFor={`iconKey-${index}`}>
-                                                                Icon Key (optional)
+                                                                Icon
                                                             </label>
                                                             <input
                                                                 type="text"
@@ -1053,7 +1252,7 @@ function ProfileForm({data, updateData}: { data: PreviewData, updateData: (data:
     const [uploading, setUploading] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        updateData({...data, [e.target.name]: e.target.value});
+        updateData({[e.target.name]: e.target.value});
     };
 
     const onCropComplete = useCallback((croppedArea: Area, croppedAreaPixels: Area) => {
@@ -1157,12 +1356,10 @@ function ProfileForm({data, updateData}: { data: PreviewData, updateData: (data:
                 const result = await client.store(imageBlob, {contentType: 'image/jpeg'});
                 if ('newlyCreated' in result) {
                     updateData({
-                        ...data,
                         u: `https://aggregator-devnet.walrus.space/v1/${result.newlyCreated.blobObject.blobId as string}`
                     })
                 } else if ('alreadyCertified' in result) {
                     updateData({
-                        ...data,
                         u: `https://aggregator-devnet.walrus.space/v1/${result.alreadyCertified.blobId as string}`
                     })
                 }
