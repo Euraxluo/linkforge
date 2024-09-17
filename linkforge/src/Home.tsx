@@ -24,7 +24,7 @@ import {useCurrentAccount, useSuiClient, useSignAndExecuteTransaction, useCurren
 import {Transaction} from "@mysten/sui/transactions";
 import {useLinkData} from "./link/useLinkData";
 import {ConnectButton, Connector} from "@ant-design/web3";
-import {isEqual} from 'lodash';
+import { isEqual } from 'lodash';
 import {TransactionVisualizer} from "./TransactionVisualizer";
 import {Template as SimpleTemplate} from "./template/Simple";
 import {Template as DynamicTemplate} from "./template/Dynamic";
