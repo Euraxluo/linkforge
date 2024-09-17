@@ -59,7 +59,6 @@ const TemplateWrapper: React.FC = () => {
             </div>
         );
     }
-
     if (!decodedData) {
         return <ErrorPage/>;
     }
@@ -68,12 +67,10 @@ const TemplateWrapper: React.FC = () => {
         simple: SimpleTemplate,
         dynamic: DynamicTemplate,
     };
-
     const SelectedTemplate = templateComponents[template as keyof typeof templateComponents];
 
     if (!SelectedTemplate) {
         return <ErrorPage/>;
     }
-
     return <SelectedTemplate data={decodedData}/>;
 };

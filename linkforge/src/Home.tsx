@@ -17,7 +17,7 @@ import {
 import {Icon} from '@iconify-icon/react';
 import Cropper from 'react-easy-crop'
 import {Point, Area} from 'react-easy-crop/types'
-import {encodeData, extractDataFromURL, Link, PreviewData} from "./utils";
+import {decodeData, encodeData, extractDataFromURL, Link, PreviewData} from "./utils";
 import {WalrusClient} from 'tuskscript'
 import {useNetworkVariable} from "./networkConfig";
 import {useCurrentAccount, useSuiClient, useSignAndExecuteTransaction, useCurrentWallet} from "@mysten/dapp-kit";

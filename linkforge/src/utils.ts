@@ -1,26 +1,31 @@
-import {decode, encode} from "js-base64";
-
-export const encodeData = (obj: PreviewData) => {
-    return encode(JSON.stringify(obj));
+// 编码函数
+export const encodeData = (obj: any) => {
+    const jsonString = JSON.stringify(obj);
+    const utf8Bytes = new TextEncoder().encode(jsonString);
+    let base64 = btoa(String.fromCharCode.apply(null, utf8Bytes));
+    return base64
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
 };
 
-// export const encodeSignData = (obj: PreviewData) => {
-//     const content: PreviewData = JSON.parse(JSON.stringify(obj))
-//     content.n = encode(obj.n)
-//     return encode(JSON.stringify(content));
-// };
+// 解码函数
+export const decodeData = (encodedData: string) => {
+    // 添加回可能被移除的 '=' 填充
+    encodedData = encodedData.replace(/-/g, '+').replace(/_/g, '/');
+    const pad = encodedData.length % 4;
+    if (pad) {
+        encodedData += '='.repeat(4 - pad);
+    }
 
-export const decodeData = (base64: string) => {
-    const data: PreviewData = JSON.parse(decode(base64))
-    return data
+    const binaryString = atob(encodedData);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+    }
+    const jsonString = new TextDecoder().decode(bytes);
+    return JSON.parse(jsonString);
 };
-
-//
-// export const decodeSignData = (base64: string) => {
-//     const data: PreviewData = JSON.parse(decode(base64))
-//     data.n = decode(data.n)
-//     return data
-// };
 
 export interface Link {
     u: string;
@@ -94,17 +99,9 @@ export function extractDataFromURL(link: string): {
         throw new Error('No data parameter found in the URL');
     }
 
-    // Step 3: Decode the base64-encoded string
-    let decodedData: string;
+    // Step 3: Parse the JSON
     try {
-        decodedData = atob(dataParam);
-    } catch (error) {
-        throw new Error('Failed to decode base64 data');
-    }
-
-    // Step 4: Parse the JSON
-    try {
-        const parsedData: PreviewData  = decodeData(dataParam);
+        const parsedData: PreviewData = decodeData(dataParam);
         return {
             template,
             data: parsedData
