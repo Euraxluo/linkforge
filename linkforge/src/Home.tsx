@@ -194,7 +194,7 @@ const AccessMethod: React.FC<AccessMethodProps> = ({ title, description, demo, i
 
     return (
         <motion.div
-            className="bg-white bg-opacity-20 backdrop-blur-lg rounded-lg shadow-lg p-6 transition-all duration-300 hover:shadow-xl hover:bg-opacity-30"
+            className="cursor-pointer bg-white bg-opacity-20 backdrop-blur-lg rounded-lg shadow-lg p-6 transition-all duration-300 hover:shadow-xl hover:bg-opacity-30"
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.98 }}
         >
@@ -208,7 +208,7 @@ const AccessMethod: React.FC<AccessMethodProps> = ({ title, description, demo, i
                             type="text"
                             value={demo}
                             readOnly
-                            className="w-full bg-blue-100 bg-opacity-50 text-sm text-blue-900 py-2 px-3 pr-48 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300"
+                            className="w-full bg-blue-100 bg-opacity-50 text-sm text-blue-900 py-2 px-3 pr-32 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300"
                         />
                         <div className="absolute right-1 top-1 flex space-x-2">
                             <button
@@ -237,7 +237,7 @@ const AccessMethods: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="bg-gradient-to-br opacity-40 from-blue-400 to-blue-500 rounded-lg shadow-lg p-8 mb-8 relative overflow-hidden"
+            className="from-blue-300 to-blue-700  shadow-lg  mb-8 relative overflow-hidden bg-blue-300 bg-opacity-30 p-6 rounded-lg backdrop-blur-sm"
         >
             {/* Underwater effect */}
             <div className="absolute inset-0 z-0">
