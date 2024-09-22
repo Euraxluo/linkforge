@@ -91,7 +91,7 @@ export const Template: React.FC<ProfileTemplateProps> = ({data}) => {
                         }}
                     />
 
-                    <div className="relative p-2 sm:p-8 space-y-4 sm:space-y-8">
+                    <div className="relative p-4 sm:p-8 space-y-4 sm:space-y-8">
                         <motion.div
                             className="text-center"
                             initial={{ opacity: 0, y: 50 }}
@@ -149,7 +149,7 @@ export const Template: React.FC<ProfileTemplateProps> = ({data}) => {
                                                     href={link}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="block p-2 sm:p-3 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"
+                                                    className="flex items-center justify-center aspect-square w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"
                                                     whileHover={{ scale: 1.2, rotate: 360 }}
                                                     whileTap={{ scale: 0.8 }}
                                                 >
@@ -181,13 +181,13 @@ export const Template: React.FC<ProfileTemplateProps> = ({data}) => {
                                                 href={link.u}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="flex items-center space-x-0 sm:space-x-4 p-3 sm:p-4 rounded-xl bg-gray-100 hover:bg-gray-200 transition-colors"
+                                                className="flex items-center space-x-4 p-3 sm:p-4 rounded-xl bg-gray-100 hover:bg-gray-200 transition-colors"
                                                 whileHover={{ scale: 1.05, backgroundColor: "#e2e8f0" }}
                                                 whileTap={{ scale: 0.95 }}
                                             >
-                                                <div className="flex-shrink-0 p-3 w-4 h-4 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-lg flex items-center justify-center">
+                                                <div className="flex-shrink-0 p-3 w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-lg flex items-center justify-center">
                                                     {link.i && link.i.startsWith('http') ? (
-                                                        <img src={link.i} alt={link.l} className="h-4 w-4 sm:h-8 sm:w-8" />
+                                                        <img src={link.i} alt={link.l} className="h-6 w-6 sm:h-8 sm:w-8" />
                                                     ) : (
                                                         <Icon icon={link.i || 'mdi:link'} width={24} height={24} className="text-white" />
                                                     )}

@@ -24,7 +24,7 @@ import {useCurrentAccount, useSuiClient, useSignAndExecuteTransaction, useCurren
 import {Transaction} from "@mysten/sui/transactions";
 import {useLinkData} from "./link/useLinkData";
 import {ConnectButton, Connector} from "@ant-design/web3";
-import { isEqual } from 'lodash';
+import {isEqual} from 'lodash';
 import {TransactionVisualizer} from "./TransactionVisualizer";
 import {Template as SimpleTemplate} from "./template/Simple";
 import {Template as DynamicTemplate} from "./template/Dynamic";
@@ -156,11 +156,10 @@ const TabTrigger: React.FC<TableActionProps> = ({value, active, children}: Table
         <Tabs.Trigger
             value={value}
             className={`
-                flex-1 px-4 py-2 text-center transition-all duration-200
-                focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-opacity-50
+                flex-1 text-center cursor-pointer px-4 py-2 transition-all duration-200 bg-opacity-60 hover:shadow-xl hover:bg-opacity-30
                 ${active
-                ? 'bg-white text-blue-600 font-semibold border-b-2 border-blue-600'
-                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`
+                ? 'text-blue-600 font-semibold shadow-xl '
+                : 'text-gray-100 hover:shadow-xl hover:bg-opacity-30'}`
             }>
             {children}
         </Tabs.Trigger>
@@ -178,7 +177,7 @@ interface AccessMethodProps {
     icon: React.ReactNode;
 }
 
-const AccessMethod: React.FC<AccessMethodProps> = ({ title, description, demo, icon }) => {
+const AccessMethod: React.FC<AccessMethodProps> = ({title, description, demo, icon}) => {
     const [isCopied, setIsCopied] = React.useState(false);
 
     const copyToClipboard = () => {
@@ -195,8 +194,8 @@ const AccessMethod: React.FC<AccessMethodProps> = ({ title, description, demo, i
     return (
         <motion.div
             className="cursor-pointer bg-white bg-opacity-20 backdrop-blur-lg rounded-lg shadow-lg p-6 transition-all duration-300 hover:shadow-xl hover:bg-opacity-30"
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.98 }}
+            whileHover={{scale: 1.03}}
+            whileTap={{scale: 0.98}}
         >
             <div className="flex items-start space-x-4">
                 <div className="text-3xl bg-blue-500 p-3 rounded-full text-white shadow-lg">{icon}</div>
@@ -234,9 +233,9 @@ const AccessMethod: React.FC<AccessMethodProps> = ({ title, description, demo, i
 const AccessMethods: React.FC = () => {
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            initial={{opacity: 0, y: 20}}
+            animate={{opacity: 1, y: 0}}
+            transition={{duration: 0.5}}
             className="from-blue-300 to-blue-700  shadow-lg  mb-8 relative overflow-hidden bg-blue-300 bg-opacity-30 p-6 rounded-lg backdrop-blur-sm"
         >
             {/* Underwater effect */}
@@ -246,11 +245,12 @@ const AccessMethods: React.FC = () => {
                 <div className="bubble bubble-3"></div>
             </div>
 
-            <h2 className="text-3xl font-bold text-center text-white mb-8 relative z-10">Four Ways to Access Your Link</h2>
+            <h2 className="text-3xl font-bold text-center text-white mb-8 relative z-10">Four Ways to Access Your
+                Link</h2>
             <motion.div
                 className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10"
                 variants={{
-                    hidden: { opacity: 0 },
+                    hidden: {opacity: 0},
                     show: {
                         opacity: 1,
                         transition: {
@@ -265,25 +265,25 @@ const AccessMethods: React.FC = () => {
                     title="Your Account Address"
                     description="Use your Sui wallet address to view your link."
                     demo={`${window.location.origin}/#/0x540ba39b0328acd14e100a8af76b7880e336abe08f806ada5643085794bd8aab`}
-                    icon={<Key className="w-8 h-8" />}
+                    icon={<Key className="w-8 h-8"/>}
                 />
                 <AccessMethod
                     title="Link Object Address"
                     description="Access your link using its unique object address on the Sui network."
                     demo={`${window.location.origin}/#/0x1036af975664abdb2920efb767fb3f5df1f4b18f20946b5bd4d7cb935361a0d8`}
-                    icon={<Link2 className="w-8 h-8" />}
+                    icon={<Link2 className="w-8 h-8"/>}
                 />
                 <AccessMethod
                     title="Blockchain Domain"
                     description="Use your personalized .sui domain to view your link."
                     demo={`${window.location.origin}/#/mint.sui`}
-                    icon={<Globe className="w-8 h-8" />}
+                    icon={<Globe className="w-8 h-8"/>}
                 />
                 <AccessMethod
                     title="SBT Link Content"
                     description="Access through the encoded link in your SBT's content."
                     demo={`${window.location.origin}/#/dynamic?data=eyJscyI6W3sibCI6Ik15IFdlYnNpdGUiLCJpIjoicGg6Z2xvYmUtZHVvdG9uZSIsInUiOiJodHRwczovL2V4YW1wbGUuY29tIn0seyJsIjoiQW1hem9uIHdpc2hsaXN0IiwiaSI6ImFudC1kZXNpZ246YW1hem9uLW91dGxpbmVkIiwidSI6Imh0dHBzOi8vYW1hem9uLmluIn0seyJsIjoiUmVhY3QgSlMiLCJpIjoiZ3JvbW1ldC1pY29uczpyZWFjdGpzIiwidSI6Imh0dHBzOi8vcmVhY3Rqcy5vcmcvIn0seyJsIjoiRG9uYXRlIGZvciBvdXIgY2F1c2UiLCJpIjoiaWNvbm9pcjpkb25hdGUiLCJ1IjoiaHR0cHM6Ly93aG8uaW50In0seyJsIjoiRG93bmxvYWQgbXkgcmVzdW1lIiwiaSI6InBoOmZpbGUtcGRmIiwidSI6Imh0dHBzOi8vZ29vZ2xlLmNvbSJ9XSwibiI6IkV4YW1wbGUg5rWL6K-V5LiA5LiLIiwiYiI6IkknbSBEZXZlbG9wZXIuIiwidSI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTE3My9wbGFjZWhvbGRlci5zdmciLCJmIjoiaHR0cHM6Ly93d3cuZmFjZWJvb2suY29tL3VzZXJuYW1lIiwieCI6Imh0dHBzOi8veC5jb20vdXNlcm5hbWUiLCJpZyI6Imh0dHBzOi8vd3d3Lmluc3RhZ3JhbS5jb20vdXNlcm5hbWUiLCJlIjoibWFpbEB1c2VybmFtZS5jYyIsImdoIjoiaHR0cHM6Ly9naXRodWIuY29tL3VzZXJuYW1lIiwidGciOiJodHRwczovL3QubWUvdXNlcm5hbWUiLCJ3IjoiKzkxODg4ODg4ODg4OCIsInkiOiJodHRwczovL3lvdXR1YmUuY29tL0B1c2VybmFtZSIsImxrIjoiaHR0cHM6Ly9saW5rZWRpbi5jb20vaW4vdXNlcm5hbWUiLCJtIjoiaHR0cHM6Ly9tYXN0b2Rvbi5zb2NpYWwvQHVzZXJuYW1lIn0`}
-                    icon={<FileText className="w-8 h-8" />}
+                    icon={<FileText className="w-8 h-8"/>}
                 />
             </motion.div>
         </motion.div>
@@ -384,10 +384,11 @@ function HomeSection({setActiveSection}: HomeSectionProps) {
 
             <Tabs.Root
                 defaultValue="video"
-                className="bg-white mb-4 text-gray-800 rounded-lg shadow-lg overflow-hidden"
+                className="from-blue-300 to-blue-700 shadow-lg  mb-8 relative overflow-hidden bg-blue-300 bg-opacity-30 p-6 rounded-lg backdrop-blur-sm hover:shadow-xl"
                 onValueChange={setActiveTab}
             >
-                <Tabs.List className="flex border-b border-gray-200 bg-gray-50">
+                <Tabs.List
+                    className="flex mb-2 cursor-pointer bg-white bg-opacity-20 backdrop-blur-lg rounded-lg shadow-lg transition-all duration-300">
                     <TabTrigger value="video" active={activeTab === 'video'}>
                         Video
                     </TabTrigger>
@@ -398,7 +399,7 @@ function HomeSection({setActiveSection}: HomeSectionProps) {
                         Metadata
                     </TabTrigger>
                 </Tabs.List>
-                <div className="relative">
+                <div className="relative bg-blue-100 bg-opacity-20 rounded-lg shadow-lg">
                     <Tabs.Content value="preview" asChild forceMount>
                         <div className={`p-4 ${activeTab !== 'preview' ? 'hidden' : ''}`}>
                             <AnimatePresence>
@@ -415,7 +416,8 @@ function HomeSection({setActiveSection}: HomeSectionProps) {
                                                 <div
                                                     className="bg-gray-100 p-2 rounded-lg shadow-inner h-[600px] overflow-hidden">
                                                     <iframe
-                                                        src={`${sbtMetadata.display.link}`}
+                                                        src={`${window.location.origin}/#/mint.sui`}
+                                                        // src={`${sbtMetadata.display.link}`}
                                                         className="w-full h-full rounded-md shadow-sm"
                                                         title="Preview"
                                                     />
