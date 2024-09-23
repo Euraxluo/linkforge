@@ -416,8 +416,7 @@ function HomeSection({setActiveSection}: HomeSectionProps) {
                                                 <div
                                                     className="bg-gray-100 p-2 rounded-lg shadow-inner h-[600px] overflow-hidden">
                                                     <iframe
-                                                        src={`${window.location.origin}/#/mint.sui`}
-                                                        // src={`${sbtMetadata.display.link}`}
+                                                        src={`${sbtMetadata.display.link}`}
                                                         className="w-full h-full rounded-md shadow-sm"
                                                         title="Preview"
                                                     />
