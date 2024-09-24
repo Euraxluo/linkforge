@@ -158,6 +158,4 @@ The final phase will focus on promoting LinkForge and showcasing the unique appe
 
 Through this meticulously designed four-phase plan, LinkForge not only aims to bring Solana's innovations to the Sui ecosystem but also to demonstrate the practical applications of blockchain technology in daily life through this unique platform. We believe this project will be a significant milestone in promoting cross-chain collaboration and enhancing user experience, opening up new possibilities for the entire blockchain industry.
 
-By integrating the Blink protocol, enabling cross-chain interoperability, and providing an intuitive user experience, LinkForge will serve as a bridge connecting the Solana and Sui ecosystems. This will not only benefit the joint development of both ecosystems but also offer users more diverse and convenient blockchain application scenarios.
-
-We look forward to witnessing the growth of LinkForge and the flourishing of the Sui ecosystem together with our community. Through continuous innovation and optimization, we believe LinkForge will become a crucial force in popularizing blockchain technology, bringing the convenience and value of blockchain to a broader user base.
+By integrating the Blink protocol, enabling cross-chain interoperability, and providing an intuitive user experience.
